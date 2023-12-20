@@ -1,0 +1,37 @@
+run:
+  go: '1.21.3'
+  skip-dirs:
+    - statik
+  timeout: 5m
+  linters:
+    enable:
+      - asciicheck
+      - bodyclose
+      - contextcheck
+      - durationcheck
+      - errcheck
+      - errname
+      - errorlint
+      - exportloopref
+      - forcetypeassert
+      - goconst
+      - gocritic
+      - gofmt
+      - ireturn
+      - lll
+      - makezero
+      - misspell
+      - prealloc
+      - predeclared
+      - rowserrcheck
+      - sqlclosecheck
+      - unparam
+      - unused
+      - wastedassign
+      - whitespace
+      - goimports
+  linters-settings:
+    lll:
+      line-height: 120
+    ireturn:
+      error,generic,anon,stdlib,ogen\.[A-Za-z]+Res
