@@ -4,7 +4,7 @@ BINARY_NAME = nftique
 PWD = $(shell pwd)
 VERSION ?= $(shell git describe --exact-match --tags 2> /dev/null || head -1 CHANGELOG.md | cut -d ' ' -f 2)
 COMMIT ?= $(shell git rev-parse HEAD)
-BUILD_DATE = $(shell date -u "%Y-%m-%dT%H:%M:%S")
+BUILD_DATE = $(shell date +"%Y-%m-%dT%H:%M:%S")
 LDFLAGS = -ldflags "-w -X ${PACKAGE}/internal/app.Version=${VERSION} -X ${PACKAGE}/internal/app.BuildDate=${BUILD_DATE} -X ${PACKAGE}/internal/app.Commit=${COMMIT}"
 
 .PHONY: update
@@ -21,7 +21,7 @@ lint: bin/golang-lint
 
 .PHONY: test
 test:
-	@go test ./internal/... -race -v -count=1 -coverprofile .cover
+	@go test ./... -race -v -count=1 -coverprofile .cover
 	@go tool cover -func .cover | grep "total:"
 
 .PHONY: coverage
@@ -30,7 +30,7 @@ coverage:
 
 .PHONY: build
 build:
-	go build -tags '${TAGS}' '${LDFLAGS}' -o ${BUILD_DIR}/${BINARY_NAME} ${PACKAGE}/cmd/${BINARY_NAME}
+	go build -tags '${TAGS}' ${LDFLAGS} -o ${BUILD_DIR}/${BINARY_NAME} ${PACKAGE}/cmd/${BINARY_NAME}
 
 .PHONY: run
 run: build
