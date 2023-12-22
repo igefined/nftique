@@ -26,6 +26,7 @@ type (
 		Port        string `mapstructure:"port"`
 		MonitorHost string `mapstructure:"monitor_host"`
 		MonitorPort string `mapstructure:"monitor_port"`
+		Environment string `mapstructure:"environment"`
 	}
 )
 

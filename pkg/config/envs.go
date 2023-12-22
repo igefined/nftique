@@ -5,6 +5,7 @@ const (
 	defaultPort        = "8080"
 	defaultMonitorHost = "127.0.0.1"
 	defaultMonitorPort = "8090"
+	defaultEnvironment = "dev"
 )
 
 var (
@@ -34,5 +35,12 @@ var (
 		"MONITOR_PORT",
 		defaultMonitorPort,
 		"Monitor port",
+	)
+
+	DefaultEnvironment = NewEnvVar(
+		"environment",
+		"ENVIRONMENT",
+		defaultEnvironment,
+		"",
 	)
 )

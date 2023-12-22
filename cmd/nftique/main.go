@@ -1,9 +1,11 @@
 package main
 
 import (
+	"go.uber.org/fx"
+
 	"github.com/igefined/nftique/internal/app"
 )
 
 func main() {
-	app.Run()
+	fx.New(app.Module).Run()
 }

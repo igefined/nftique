@@ -13,10 +13,10 @@ update:
 	go mod verify
 
 bin/golang-lint: | bin/
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.52.2
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2
 
 .PHONY: lint
-lint: bin/golang-lint
+lint: | bin/golang-lint
 	@PATH="$(realpath bin):$$PATH" golangci-lint run
 
 .PHONY: test
