@@ -12,6 +12,9 @@ update:
 	go mod tidy
 	go mod verify
 
+bin/:
+	mkdir -p bin
+
 bin/golang-lint: | bin/
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2
 

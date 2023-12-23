@@ -41,6 +41,6 @@ var (
 		"environment",
 		"ENVIRONMENT",
 		defaultEnvironment,
-		"",
+		"Deployment environment",
 	)
 )

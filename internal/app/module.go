@@ -6,6 +6,7 @@ import (
 	"github.com/igefined/nftique/internal/config"
 	cfg "github.com/igefined/nftique/pkg/config"
 	"github.com/igefined/nftique/pkg/log"
+	"github.com/igefined/nftique/pkg/sys"
 
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -18,7 +19,9 @@ var Module = fx.Options(
 		},
 	),
 	log.Module,
+	sys.Module,
 	config.Module,
+	WebServerModule,
 	fx.Decorate(func(logger *zap.Logger) *zap.Logger {
 		return logger.With(
 			zap.String("version", Version),
@@ -27,13 +30,24 @@ var Module = fx.Options(
 		)
 	}),
 	fx.Invoke(
-		func(ls fx.Lifecycle, cxt context.Context, logger *zap.Logger, cfg *config.Config) {
+		func(ls fx.Lifecycle,
+			appCtx context.Context,
+			logger *zap.Logger,
+			cfg *config.Config,
+			webServer *WebServer,
+		) {
 			ls.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
-					return Run()
-				},
-				OnStop: func(ctx context.Context) error {
+				OnStart: func(_ context.Context) error {
+					go func() {
+						if err := webServer.StartServer(); err != nil {
+							logger.Fatal("start server error", zap.Error(err))
+						}
+					}()
+
 					return nil
+				},
+				OnStop: func(_ context.Context) error {
+					return webServer.ShutDownServer()
 				},
 			})
 		},

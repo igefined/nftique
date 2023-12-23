@@ -28,11 +28,11 @@ var Module = fx.Options(
 			}
 
 			ls.Append(fx.Hook{
-				OnStart: func(ctx context.Context) error {
+				OnStart: func(_ context.Context) error {
 					_ = l.Sync()
 					return nil
 				},
-				OnStop: func(ctx context.Context) error {
+				OnStop: func(_ context.Context) error {
 					return nil
 				},
 			})

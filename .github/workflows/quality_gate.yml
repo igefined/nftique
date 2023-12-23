@@ -1,0 +1,25 @@
+name: Quality Gates
+
+on:
+  push:
+    branches: [ "*" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.3'
+
+      - name: Update
+        run: make update
+
+      - name: Test
+        run: make test
+
+      - name: Lint
+        run: make lint
