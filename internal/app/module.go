@@ -13,11 +13,7 @@ import (
 )
 
 var Module = fx.Options(
-	fx.Provide(
-		func() context.Context {
-			return cfg.SigTermIntCtx()
-		},
-	),
+	fx.Provide(cfg.SigTermIntCtx()),
 	log.Module,
 	sys.Module,
 	config.Module,

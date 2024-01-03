@@ -9,6 +9,10 @@ import (
 )
 
 var envs = []*EnvVar{
+	DefaultServiceName,
+	DefaultNamespace,
+	DefaultEnvironment,
+
 	DefaultHost,
 	DefaultPort,
 	DefaultMonitorHost,
@@ -22,11 +26,14 @@ type (
 	}
 
 	MainCfg struct {
+		ServiceName string `mapstructure:"service_name"`
+		Namespace   string `mapstructure:"namespace"`
+		Environment string `mapstructure:"environment"`
+
 		Host        string `mapstructure:"host"`
 		Port        string `mapstructure:"port"`
 		MonitorHost string `mapstructure:"monitor_host"`
 		MonitorPort string `mapstructure:"monitor_port"`
-		Environment string `mapstructure:"environment"`
 	}
 )
 

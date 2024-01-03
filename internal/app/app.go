@@ -34,7 +34,11 @@ func NewWebServer(cfg *config.Config, logger *zap.Logger, sys *sys.App) *WebServ
 }
 
 func (s *WebServer) StartServer() error {
-	s.server.Mount("/", s.sys.App)
+	prometheus := sys.NewPrometheus(s.cfg.Namespace, s.cfg.Environment, s.cfg.ServiceName)
+	prometheus.RegisterAt(s.server, "/system/metrics")
+	s.server.Use(prometheus.Middleware)
+
+	s.server.Mount("/system", s.sys.App)
 
 	return s.server.Listen(fmt.Sprintf(":%s", s.cfg.Port))
 }

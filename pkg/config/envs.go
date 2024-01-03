@@ -1,6 +1,8 @@
 package config
 
 const (
+	defaultServiceName = "nftique"
+	defaultNamespace   = "nftique_namespace"
 	defaultHost        = "127.0.0.1"
 	defaultPort        = "8080"
 	defaultMonitorHost = "127.0.0.1"
@@ -9,6 +11,20 @@ const (
 )
 
 var (
+	DefaultServiceName = NewEnvVar(
+		"service_name",
+		"SERVICE_NAME",
+		defaultServiceName,
+		"Service name",
+	)
+
+	DefaultNamespace = NewEnvVar(
+		"namespace",
+		"NAMESPACE",
+		defaultNamespace,
+		"Service namespace",
+	)
+
 	DefaultHost = NewEnvVar(
 		"host",
 		"HOST",
