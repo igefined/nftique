@@ -8,6 +8,8 @@ const (
 	defaultMonitorHost = "127.0.0.1"
 	defaultMonitorPort = "8090"
 	defaultEnvironment = "dev"
+
+	defaultRedisDB = 0
 )
 
 var (
@@ -58,5 +60,20 @@ var (
 		"ENVIRONMENT",
 		defaultEnvironment,
 		"Deployment environment",
+	)
+
+	// Redis
+	DefaultRedisAddr = NewEnvVar(
+		"redis_address",
+		"REDIS_ADDRESS",
+		defaultHost,
+		"Redis address",
+	)
+
+	DefaultRedisDatabase = NewEnvVar(
+		"redis_database",
+		"REDIS_DATABASE",
+		defaultRedisDB,
+		"Redis database name",
 	)
 )

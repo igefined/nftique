@@ -17,6 +17,9 @@ var envs = []*EnvVar{
 	DefaultPort,
 	DefaultMonitorHost,
 	DefaultMonitorPort,
+
+	DefaultRedisAddr,
+	DefaultRedisDatabase,
 }
 
 type (
@@ -34,6 +37,12 @@ type (
 		Port        string `mapstructure:"port"`
 		MonitorHost string `mapstructure:"monitor_host"`
 		MonitorPort string `mapstructure:"monitor_port"`
+	}
+
+	RedisCfg struct {
+		Addr     string `mapstructure:"redis_address"`
+		Password string `mapstructure:"redis_password"`
+		Database int    `mapstructure:"redis_database"`
 	}
 )
 

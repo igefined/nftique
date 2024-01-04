@@ -8,7 +8,8 @@ import (
 
 type Config struct {
 	sync.RWMutex
-	config.MainCfg `mapstructure:",squash"`
+	config.MainCfg  `mapstructure:",squash"`
+	config.RedisCfg `mapstructure:",squash"`
 }
 
 func New() (*Config, error) {
