@@ -62,11 +62,17 @@ var (
 		"Deployment environment",
 	)
 
-	// Redis
 	DefaultRedisAddr = NewEnvVar(
 		"redis_address",
 		"REDIS_ADDRESS",
 		defaultHost,
+		"Redis address",
+	)
+
+	DefaultRedisPassword = NewEnvVar(
+		"redis_password",
+		"REDIS_PASSWORD",
+		"",
 		"Redis address",
 	)
 

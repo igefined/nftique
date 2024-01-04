@@ -14,17 +14,11 @@ type Redis interface {
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 }
 
-type (
-	Client struct {
-		cfg *config.RedisCfg
+type Client struct {
+	cfg *config.RedisCfg
 
-		redis *redis.Client
-	}
-
-	Opts struct {
-		Expiration time.Duration
-	}
-)
+	redis *redis.Client
+}
 
 func New(cfg *config.RedisCfg) *Client {
 	redisClient := redis.NewClient(&redis.Options{

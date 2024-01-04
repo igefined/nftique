@@ -3,10 +3,12 @@ package app
 import (
 	"fmt"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/igefined/nftique/internal/config"
+	"github.com/igefined/nftique/internal/transport/http"
+	"github.com/igefined/nftique/internal/transport/http/handler"
 	"github.com/igefined/nftique/pkg/sys"
 
+	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -18,31 +20,39 @@ var (
 	Version   string
 )
 
-var WebServerModule = fx.Options(fx.Provide(NewWebServer))
+var WebServerModule = fx.Options(
+	handler.Module,
+	fx.Provide(
+		NewWebServer,
+		http.NewServer,
+	),
+)
 
 type WebServer struct {
 	cfg    *config.Config
 	logger *zap.Logger
 
 	// apps
-	server *fiber.App
-	sys    *sys.App
+	app  *fiber.App
+	http *http.App
+	sys  *sys.App
 }
 
-func NewWebServer(cfg *config.Config, logger *zap.Logger, sys *sys.App) *WebServer {
-	return &WebServer{cfg: cfg, logger: logger, sys: sys, server: fiber.New()}
+func NewWebServer(cfg *config.Config, logger *zap.Logger, sys *sys.App, httpServer *http.App) *WebServer {
+	return &WebServer{cfg: cfg, logger: logger, sys: sys, http: httpServer, app: fiber.New()}
 }
 
 func (s *WebServer) StartServer() error {
 	prometheus := sys.NewPrometheus(s.cfg.Namespace, s.cfg.Environment, s.cfg.ServiceName)
-	prometheus.RegisterAt(s.server, "/system/metrics")
-	s.server.Use(prometheus.Middleware)
+	prometheus.RegisterAt(s.app, "/system/metrics")
+	s.app.Use(prometheus.Middleware)
 
-	s.server.Mount("/system", s.sys.App)
+	s.app.Mount("/system", s.sys.App)
+	s.app.Mount("/api", s.http.App)
 
-	return s.server.Listen(fmt.Sprintf(":%s", s.cfg.Port))
+	return s.app.Listen(fmt.Sprintf(":%s", s.cfg.Port))
 }
 
 func (s *WebServer) ShutDownServer() error {
-	return s.server.Shutdown()
+	return s.app.Shutdown()
 }

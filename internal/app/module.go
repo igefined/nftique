@@ -6,6 +6,7 @@ import (
 	"github.com/igefined/nftique/internal/config"
 	cfg "github.com/igefined/nftique/pkg/config"
 	"github.com/igefined/nftique/pkg/log"
+	"github.com/igefined/nftique/pkg/redis"
 	"github.com/igefined/nftique/pkg/sys"
 
 	"go.uber.org/fx"
@@ -13,10 +14,11 @@ import (
 )
 
 var Module = fx.Options(
-	fx.Provide(cfg.SigTermIntCtx()),
+	fx.Provide(func() { cfg.SigTermIntCtx() }),
 	log.Module,
 	sys.Module,
 	config.Module,
+	redis.Module,
 	WebServerModule,
 	fx.Decorate(func(logger *zap.Logger) *zap.Logger {
 		return logger.With(

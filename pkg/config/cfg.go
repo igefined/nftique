@@ -20,6 +20,7 @@ var envs = []*EnvVar{
 
 	DefaultRedisAddr,
 	DefaultRedisDatabase,
+	DefaultRedisPassword,
 }
 
 type (
