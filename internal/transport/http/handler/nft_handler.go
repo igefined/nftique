@@ -1,15 +1,14 @@
 package handler
 
 import (
-	"context"
-	"strings"
+	"github.com/igefined/nftique/internal/domain"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
 type NFTService interface {
-	ListAllAvailable(ctx context.Context) ([]string, error)
+	ListAllAvailable(ctx *fiber.Ctx) ([]*domain.NFT, error)
 }
 
 type NFTHandler struct {
@@ -22,10 +21,10 @@ func NewNFTHandler(logger *zap.Logger, service NFTService) *NFTHandler {
 }
 
 func (n NFTHandler) ListAllNFTs(ctx *fiber.Ctx) error {
-	nfts, err := n.service.ListAllAvailable(ctx.UserContext())
+	nfts, err := n.service.ListAllAvailable(ctx)
 	if err != nil {
 		return err
 	}
 
-	return ctx.Send([]byte(strings.Join(nfts, ",")))
+	return ctx.JSON(nfts)
 }

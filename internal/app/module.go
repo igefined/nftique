@@ -14,7 +14,7 @@ import (
 )
 
 var Module = fx.Options(
-	fx.Provide(func() { cfg.SigTermIntCtx() }),
+	fx.Provide(func() context.Context { return cfg.SigTermIntCtx() }), //nolint:gocritic
 	log.Module,
 	sys.Module,
 	config.Module,

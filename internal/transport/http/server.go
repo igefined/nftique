@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/gofiber/fiber/v2"
-
 	"github.com/igefined/nftique/internal/transport/http/handler"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type App struct {
