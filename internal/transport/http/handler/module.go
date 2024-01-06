@@ -12,6 +12,7 @@ var Module = fx.Options(
 	Services,
 	fx.Provide(
 		NewNFTHandler,
+		NewAuthHandler,
 		NewHandler,
 	),
 	fx.Invoke(func(ls fx.Lifecycle) {

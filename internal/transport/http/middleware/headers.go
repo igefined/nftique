@@ -3,7 +3,7 @@ package middleware
 import "github.com/gofiber/fiber/v2"
 
 const (
-	realIPHeader    = "X-Real-IP"
+	realIPHeader    = "X-Real-Ip"
 	userAgentHeader = "User-Agent"
 )
 

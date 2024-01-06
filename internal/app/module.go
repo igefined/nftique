@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/igefined/nftique/internal/config"
+	"github.com/igefined/nftique/internal/rate_limiter"
 	cfg "github.com/igefined/nftique/pkg/config"
 	"github.com/igefined/nftique/pkg/log"
-	"github.com/igefined/nftique/pkg/redis"
 	"github.com/igefined/nftique/pkg/sys"
 
 	"go.uber.org/fx"
@@ -18,7 +18,6 @@ var Module = fx.Options(
 	log.Module,
 	sys.Module,
 	config.Module,
-	redis.Module,
 	WebServerModule,
 	fx.Decorate(func(logger *zap.Logger) *zap.Logger {
 		return logger.With(
@@ -36,6 +35,17 @@ var Module = fx.Options(
 		) {
 			ls.Append(fx.Hook{
 				OnStart: func(_ context.Context) error {
+					settings := rate_limiter.NewSettings()
+					if err := settings.Set(rate_limiter.Auth, 1, 5); err != nil {
+						return err
+					}
+
+					if err := settings.Set(rate_limiter.Common, 1, 5); err != nil {
+						return err
+					}
+
+					rate_limiter.NewRateLimiter(logger, settings, nil)
+
 					go func() {
 						if err := webServer.StartServer(); err != nil {
 							logger.Fatal("start server error", zap.Error(err))
