@@ -21,6 +21,12 @@ var envs = []*EnvVar{
 	DefaultRedisAddr,
 	DefaultRedisDatabase,
 	DefaultRedisPassword,
+
+	DefaultRateLimitLuaScriptPath,
+	DefaultRateLimitAuthRate,
+	DefaultRateLimitAuthMaxTokens,
+	DefaultRateLimitCommonRate,
+	DefaultRateLimitCommonMaxTokens,
 }
 
 type (
@@ -44,6 +50,15 @@ type (
 		Addr     string `mapstructure:"redis_address"`
 		Password string `mapstructure:"redis_password"`
 		Database int    `mapstructure:"redis_database"`
+	}
+
+	RateLimitCfg struct {
+		RedisLuaScriptPath string `mapstructure:"rate_limit_lua_script_path"`
+
+		AuthRate        float64 `mapstructure:"rate_limit_auth_rate"`
+		AuthMaxTokens   float64 `mapstructure:"rate_limit_auth_max_tokens"`
+		CommonRate      float64 `mapstructure:"rate_limit_common_rate"`
+		CommonMaxTokens float64 `mapstructure:"rate_limit_common_max_tokens"`
 	}
 )
 

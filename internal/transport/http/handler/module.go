@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"context"
-
-	"github.com/igefined/nftique/internal/rate_limiter"
 	"github.com/igefined/nftique/internal/service"
+	"github.com/igefined/nftique/pkg/rate_limiter"
 
 	"go.uber.org/fx"
 )
@@ -17,16 +15,6 @@ var Module = fx.Options(
 		NewAuthHandler,
 		NewHandler,
 	),
-	fx.Invoke(func(ls fx.Lifecycle) {
-		ls.Append(fx.Hook{
-			OnStart: func(_ context.Context) error {
-				return nil
-			},
-			OnStop: func(_ context.Context) error {
-				return nil
-			},
-		})
-	}),
 )
 
 var Services = fx.Options(

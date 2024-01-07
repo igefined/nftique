@@ -1,6 +1,7 @@
 /bin
 /build
 .idea
+/deployment/data
 
 .env.local
 .cover

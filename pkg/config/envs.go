@@ -9,7 +9,11 @@ const (
 	defaultMonitorPort = "8090"
 	defaultEnvironment = "dev"
 
-	defaultRedisDB = 0
+	defaultRedisDB       = 0
+	defaultLuaScriptPath = "rate_limit.lua"
+
+	defaultRate      = 1
+	defaultMaxTokens = 60
 )
 
 var (
@@ -81,5 +85,40 @@ var (
 		"REDIS_DATABASE",
 		defaultRedisDB,
 		"Redis database name",
+	)
+
+	DefaultRateLimitLuaScriptPath = NewEnvVar(
+		"rate_limit_lua_script_path",
+		"RATE_LIMIT_LUA_SCRIPT_PATH",
+		defaultLuaScriptPath,
+		"Path for redis lua script for rate limiting",
+	)
+
+	DefaultRateLimitAuthRate = NewEnvVar(
+		"rate_limit_auth_rate",
+		"RATE_LIMIT_AUTH_RATE",
+		defaultRate,
+		"Rate limit auth rate var",
+	)
+
+	DefaultRateLimitAuthMaxTokens = NewEnvVar(
+		"rate_limit_auth_max_tokens",
+		"RATE_LIMIT_AUTH_MAX_TOKENS",
+		defaultMaxTokens,
+		"Rate limit auth max tokens var",
+	)
+
+	DefaultRateLimitCommonRate = NewEnvVar(
+		"rate_limit_common_rate",
+		"RATE_LIMIT_COMMON_RATE",
+		defaultRate,
+		"Rate limit common rate var",
+	)
+
+	DefaultRateLimitCommonMaxTokens = NewEnvVar(
+		"rate_limit_common_max_tokens",
+		"RATE_LIMIT_COMMON_MAX_TOKENS",
+		defaultMaxTokens,
+		"Rate limit common max tokens var",
 	)
 )

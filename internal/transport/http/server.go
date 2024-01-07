@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/igefined/nftique/internal/rate_limiter"
 	"github.com/igefined/nftique/internal/transport/http/handler"
 	"github.com/igefined/nftique/internal/transport/http/middleware"
+	"github.com/igefined/nftique/pkg/rate_limiter"
 
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"

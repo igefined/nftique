@@ -38,3 +38,7 @@ build:
 .PHONY: run
 run: build
 	./bin/nftique
+
+.PHONY: deploy-local
+deploy-local:
+	cd deployment/local && docker-compose up -d

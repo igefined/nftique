@@ -3,8 +3,8 @@ package middleware
 import (
 	"strings"
 
-	"github.com/igefined/nftique/internal/rate_limiter"
 	apiErr "github.com/igefined/nftique/internal/transport/http/error"
+	"github.com/igefined/nftique/pkg/rate_limiter"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -16,7 +16,7 @@ func RateLimit(limiter *rate_limiter.RateLimiter) fiber.Handler {
 			return apiErr.Respond(ctx, err)
 		}
 
-		isAllowed := limiter.IsAllowed(requestType, 5, identifier)
+		isAllowed := limiter.IsAllowed(ctx.Context(), requestType, identifier)
 		if !isAllowed {
 			return apiErr.Respond(ctx, apiErr.ErrTooManyRequests)
 		}

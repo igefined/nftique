@@ -3,6 +3,8 @@ package rate_limiter
 import (
 	"errors"
 	"sync"
+
+	"github.com/igefined/nftique/pkg/config"
 )
 
 type Settings struct {
@@ -15,14 +17,29 @@ type settings struct {
 	MaxTokens float64
 }
 
-func NewSettings() *Settings {
+func NewSettings(cfg *config.RateLimitCfg) *Settings {
+	settingsMap := make(map[RequestType]*settings)
+
+	settingsMap[Auth] = &settings{
+		Rate:      cfg.AuthRate,
+		MaxTokens: cfg.AuthMaxTokens,
+	}
+
+	settingsMap[Common] = &settings{
+		Rate:      cfg.CommonRate,
+		MaxTokens: cfg.CommonMaxTokens,
+	}
+
 	return &Settings{
 		mu:       sync.RWMutex{},
-		settings: make(map[RequestType]*settings),
+		settings: settingsMap,
 	}
 }
 
-func (s *Settings) Set(reqType RequestType, rate, maxTokens float64) error {
+func (s *Settings) Set(
+	reqType RequestType,
+	rate, /* Rate of token generation (tokens/minute) */
+	maxTokens /* Maximum number of tokens in the bucket */ float64) error {
 	if rate < 1 {
 		return errors.New("rate should be greater than 1")
 	}
