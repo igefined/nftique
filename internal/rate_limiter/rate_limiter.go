@@ -16,11 +16,6 @@ const (
 
 type RequestType string
 
-var (
-	once    sync.Once
-	limiter *RateLimiter
-)
-
 type RateLimiter struct {
 	mu      sync.RWMutex
 	buckets map[string]*TokenBucket
@@ -31,21 +26,13 @@ type RateLimiter struct {
 }
 
 func NewRateLimiter(logger *zap.Logger, settings *Settings, redis *redis.Client) *RateLimiter {
-	once.Do(func() {
-		limiter = &RateLimiter{
-			mu:       sync.RWMutex{},
-			buckets:  make(map[string]*TokenBucket),
-			redis:    redis,
-			logger:   logger,
-			settings: settings,
-		}
-	})
-
-	return limiter
-}
-
-func GetRateLimiter() *RateLimiter {
-	return limiter
+	return &RateLimiter{
+		mu:       sync.RWMutex{},
+		buckets:  make(map[string]*TokenBucket),
+		redis:    redis,
+		logger:   logger,
+		settings: settings,
+	}
 }
 
 func (l *RateLimiter) IsAllowed(requestType RequestType, tokens float64, identifier string) bool {

@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/igefined/nftique/internal/rate_limiter"
 	"github.com/igefined/nftique/internal/service"
 
 	"go.uber.org/fx"
@@ -10,6 +11,7 @@ import (
 
 var Module = fx.Options(
 	Services,
+	rate_limiter.Module,
 	fx.Provide(
 		NewNFTHandler,
 		NewAuthHandler,

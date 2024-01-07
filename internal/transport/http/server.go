@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/igefined/nftique/internal/rate_limiter"
 	"github.com/igefined/nftique/internal/transport/http/handler"
 	"github.com/igefined/nftique/internal/transport/http/middleware"
 
@@ -10,16 +11,18 @@ import (
 
 type App struct {
 	logger  *zap.Logger
+	limiter *rate_limiter.RateLimiter
 	handler handler.Handler
 
 	*fiber.App
 }
 
-func NewServer(logger *zap.Logger, handler handler.Handler) *App {
+func NewServer(logger *zap.Logger, limiter *rate_limiter.RateLimiter, handler handler.Handler) *App {
 	instance := &App{
 		logger:  logger,
 		App:     fiber.New(),
 		handler: handler,
+		limiter: limiter,
 	}
 
 	instance.initRoutes()
@@ -29,7 +32,8 @@ func NewServer(logger *zap.Logger, handler handler.Handler) *App {
 
 func (a *App) initRoutes() {
 	v1 := a.Group("/v1")
-	v1.Use(middleware.RateLimiter)
+	v1.Use(middleware.LoggerRequest(a.logger))
+	v1.Use(middleware.RateLimit(a.limiter))
 
 	authV1 := v1.Group("/auth")
 	authV1.Post("/sign_in", a.handler.AuthHandler().SignIn)
