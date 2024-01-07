@@ -1,12 +1,12 @@
 package service
 
 import (
+	"context"
 	"math/rand"
 	"time"
 
 	"github.com/igefined/nftique/internal/domain"
 
-	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 )
 
@@ -18,7 +18,7 @@ func NewNFTService(logger *zap.Logger) *NFTService {
 	return &NFTService{logger: logger}
 }
 
-func (s *NFTService) ListAllAvailable(ctx *fiber.Ctx) ([]*domain.NFT, error) {
+func (s *NFTService) ListAllAvailable(ctx context.Context) ([]*domain.NFT, error) {
 	size := rand.Intn(10)
 	mockNFTs := make([]*domain.NFT, size)
 

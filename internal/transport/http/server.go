@@ -36,7 +36,7 @@ func (a *App) initRoutes() {
 	v1.Use(middleware.RateLimit(a.limiter))
 
 	authV1 := v1.Group("/auth")
-	authV1.Post("/sign_in", a.handler.AuthHandler().SignIn)
+	authV1.Post("/sign_up", a.handler.AuthHandler().SignUp)
 
 	nftV1 := v1.Group("/nfts")
 	nftV1.Get("/", a.handler.NFTHandler().ListAllNFTs)
