@@ -12,3 +12,24 @@ services:
       - REDIS_PASSWORD=12345
       - REDIS_PORT=6379
       - REDIS_DATABASES=0
+
+  postres:
+    image: postgres
+    container_name: postgres-db
+    environment:
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USERNAME=root
+      - POSTGRES_DATABASE=nftique
+      - POSTGRES_ROOT_PASSWORD=12345
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: 12345
+    ports:
+      - "5050:80"

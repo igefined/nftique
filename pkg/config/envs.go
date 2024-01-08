@@ -14,6 +14,8 @@ const (
 
 	defaultRate      = 1
 	defaultMaxTokens = 60
+
+	defaultDBURL = "postgres://postgres:postgres@localhost:5432/nftique?sslmode=disable"
 )
 
 var (
@@ -120,5 +122,19 @@ var (
 		"RATE_LIMIT_COMMON_MAX_TOKENS",
 		defaultMaxTokens,
 		"Rate limit common max tokens var",
+	)
+
+	DefaultDBURL = NewEnvVar(
+		"db_url",
+		"DB_URL",
+		defaultDBURL,
+		"Database url",
+	)
+
+	DefaultDBAutoCreate = NewEnvVar(
+		"db_auto_create_database",
+		"DB_AUTO_CREATE_DATABASE",
+		false,
+		"The bool variable means that the DB will be created automatically or not",
 	)
 )

@@ -27,6 +27,9 @@ var envs = []*EnvVar{
 	DefaultRateLimitAuthMaxTokens,
 	DefaultRateLimitCommonRate,
 	DefaultRateLimitCommonMaxTokens,
+
+	DefaultDBURL,
+	DefaultDBAutoCreate,
 }
 
 type (
@@ -59,6 +62,11 @@ type (
 		AuthMaxTokens   float64 `mapstructure:"rate_limit_auth_max_tokens"`
 		CommonRate      float64 `mapstructure:"rate_limit_common_rate"`
 		CommonMaxTokens float64 `mapstructure:"rate_limit_common_max_tokens"`
+	}
+
+	DBCfg struct {
+		URL                string `mapstructure:"db_url"`
+		AutoCreateDatabase bool   `mapstructure:"db_auto_create_database"`
 	}
 )
 
