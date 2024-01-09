@@ -7,6 +7,7 @@ import (
 	cfg "github.com/igefined/nftique/pkg/config"
 	"github.com/igefined/nftique/pkg/log"
 	"github.com/igefined/nftique/pkg/sys"
+	"github.com/igefined/nftique/pkg/validator"
 
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -17,6 +18,7 @@ var Module = fx.Options(
 	log.Module,
 	sys.Module,
 	config.Module,
+	validator.Module,
 	WebServerModule,
 	fx.Decorate(func(logger *zap.Logger) *zap.Logger {
 		return logger.With(
