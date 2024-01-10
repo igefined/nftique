@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/igefined/nftique/internal/config"
+	"github.com/igefined/nftique/internal/migrations"
 	cfg "github.com/igefined/nftique/pkg/config"
+	db "github.com/igefined/nftique/pkg/db/postgresql"
 	"github.com/igefined/nftique/pkg/log"
 	"github.com/igefined/nftique/pkg/sys"
 	"github.com/igefined/nftique/pkg/validator"
@@ -36,6 +38,10 @@ var Module = fx.Options(
 		) {
 			ls.Append(fx.Hook{
 				OnStart: func(_ context.Context) error {
+					if err := db.Migrate(logger, &migrations.DB, &cfg.DBCfg); err != nil {
+						return err
+					}
+
 					go func() {
 						if err := webServer.StartServer(); err != nil {
 							logger.Fatal("start server error", zap.Error(err))

@@ -137,4 +137,11 @@ var (
 		false,
 		"The bool variable means that the DB will be created automatically or not",
 	)
+
+	DefaultMigrationPath = NewEnvVar(
+		"db_migrations_path",
+		"DB_MIGRATIONS_PATH",
+		"internal/migrations/files",
+		"Database migrations path",
+	)
 )

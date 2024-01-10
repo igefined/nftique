@@ -30,6 +30,7 @@ var envs = []*EnvVar{
 
 	DefaultDBURL,
 	DefaultDBAutoCreate,
+	DefaultMigrationPath,
 }
 
 type (
@@ -66,6 +67,7 @@ type (
 
 	DBCfg struct {
 		URL                string `mapstructure:"db_url"`
+		MigrationsPath     string `mapstructure:"db_migrations_path"`
 		AutoCreateDatabase bool   `mapstructure:"db_auto_create_database"`
 	}
 )
