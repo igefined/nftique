@@ -2,7 +2,7 @@ create table if not exists users
 (
     id             uuid                     not null
         constraint users_pk primary key,
-    web3Address    text                     not null,
+    web3_address   text                     not null,
     first_name     text                              default null,
     last_name      text                              default null,
     username       varchar(255)                      default null,
@@ -11,5 +11,5 @@ create table if not exists users
     updated_at     timestamp with time zone not null default now()
 );
 
-create unique index web3Address_uix on users (web3Address);
+create unique index web3Address_uix on users (web3_address);
 create unique index username_uix on users (username);

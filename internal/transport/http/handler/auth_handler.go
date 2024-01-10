@@ -14,7 +14,7 @@ import (
 )
 
 type AuthService interface {
-	Register(ctx context.Context, web3Address string) (*domain.User, error)
+	Register(ctx context.Context, user *domain.User) (*domain.User, error)
 }
 
 type AuthHandler struct {
@@ -42,7 +42,12 @@ func (n AuthHandler) SignUp(ctx *fiber.Ctx) error {
 		return apiErr.RespondBadRequest(ctx, err)
 	}
 
-	user, err := n.service.Register(ctx.Context(), req.Web3Address)
+	user, err := n.service.Register(ctx.Context(), &domain.User{
+		Web3Address: req.Web3Address,
+		Username:    req.Username,
+		FirstName:   req.LastName,
+		LastName:    req.FirstName,
+	})
 	if err != nil {
 		n.logger.Error("Sign up", zap.Error(err))
 		return err

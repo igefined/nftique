@@ -134,7 +134,7 @@ var (
 	DefaultDBAutoCreate = NewEnvVar(
 		"db_auto_create_database",
 		"DB_AUTO_CREATE_DATABASE",
-		false,
+		true,
 		"The bool variable means that the DB will be created automatically or not",
 	)
 

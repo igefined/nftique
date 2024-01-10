@@ -14,4 +14,7 @@ var Module = fx.Options(
 	fx.Provide(func(cfg *Config) *config.RateLimitCfg {
 		return &cfg.RateLimitCfg
 	}),
+	fx.Provide(func(cfg *Config) *config.DBCfg {
+		return &cfg.DBCfg
+	}),
 )

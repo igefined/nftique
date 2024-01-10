@@ -22,6 +22,7 @@ var Module = fx.Options(
 	config.Module,
 	validator.Module,
 	WebServerModule,
+	fx.Provide(db.New),
 	fx.Decorate(func(logger *zap.Logger) *zap.Logger {
 		return logger.With(
 			zap.String("version", Version),
@@ -34,6 +35,7 @@ var Module = fx.Options(
 			appCtx context.Context,
 			logger *zap.Logger,
 			cfg *config.Config,
+			_ *db.QBuilder,
 			webServer *WebServer,
 		) {
 			ls.Append(fx.Hook{

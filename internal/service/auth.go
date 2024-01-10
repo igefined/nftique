@@ -22,6 +22,6 @@ func NewAuthService(logger *zap.Logger, userRepository UserRepository) *AuthServ
 	return &AuthService{logger: logger, userRepository: userRepository}
 }
 
-func (s *AuthService) Register(ctx context.Context, web3Address string) (*domain.User, error) {
-	return s.userRepository.GetByWeb3Address(ctx, web3Address)
+func (s *AuthService) Register(ctx context.Context, user *domain.User) (*domain.User, error) {
+	return nil, nil
 }

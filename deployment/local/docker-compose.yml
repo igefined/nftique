@@ -18,8 +18,8 @@ services:
     container_name: postgres-db
     environment:
       - POSTGRES_PASSWORD=12345
-      - POSTGRES_USERNAME=root
-      - POSTGRES_DATABASE=nftique
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_DATABASE=postgres
       - POSTGRES_ROOT_PASSWORD=12345
     ports:
       - "5432:5432"
