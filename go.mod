@@ -3,10 +3,12 @@ module github.com/igefined/nftique
 go 1.21.3
 
 require (
+	github.com/georgysavva/scany/v2 v2.1.0
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/gofiber/contrib/fiberzap/v2 v2.1.2
 	github.com/gofiber/fiber/v2 v2.52.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.5.0
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/prometheus/client_golang v1.18.0
