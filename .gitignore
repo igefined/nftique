@@ -3,6 +3,6 @@
 .idea
 /deployment/data
 
-.env.local
+.env
 .cover
 coverage.html

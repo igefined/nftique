@@ -1,9 +1,18 @@
 package postgresql
 
 import (
+	"context"
+	"fmt"
+	"sync"
 	"testing"
+	"time"
 
+	"github.com/igefined/nftique/pkg/config"
+	"github.com/igefined/nftique/pkg/log"
+
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 )
 
 func TestGetDatabaseName(t *testing.T) {
@@ -43,37 +52,38 @@ func TestReplaceDbName(t *testing.T) {
 	}
 }
 
-//nolint:gocritic
-//func TestCreateDatabase(t *testing.T) {
-//	var isExists bool
-//	logger, err := log.NewLogger(zap.DebugLevel)
-//	assert.NoError(t, err)
-//
-//	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-//	defer cancel()
-//
-//	type testConfig struct {
-//		sync.RWMutex
-//		config.DBCfg `mapstructure:",squash"`
-//	}
-//
-//	var cfg *testConfig
-//	assert.NoError(t, config.GetConfig(&cfg, []*config.EnvVar{}))
-//
-//	assert.NotEmpty(t, cfg.URL)
-//
-//	CreateDatabase(ctx, logger, cfg.URL)
-//
-//	pool, err := pgxpool.New(ctx, ReplaceDbName(cfg.URL, "postgres"))
-//	assert.NoError(t, err)
-//
-//	checkingSql := `select exists(select datname from pg_catalog.pg_database where datname = $1) as exist`
-//	row := pool.QueryRow(ctx, checkingSql, GetDatabaseName(cfg.URL))
-//	err = row.Scan(&isExists)
-//	assert.NoError(t, err)
-//	assert.True(t, isExists)
-//
-//	dropDbSql := fmt.Sprintf("drop database if exists %s", GetDatabaseName(cfg.URL))
-//	_, err = pool.Query(ctx, dropDbSql)
-//	assert.NoError(t, err)
-//}
+func TestCreateDatabase(t *testing.T) {
+	var isExists bool
+	logger, err := log.NewLogger(zap.DebugLevel)
+	assert.NoError(t, err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer cancel()
+
+	type testConfig struct {
+		sync.RWMutex
+		config.DBCfg `mapstructure:",squash"`
+	}
+
+	var cfg *testConfig
+	assert.NoError(t, config.GetConfig(&cfg, []*config.EnvVar{}))
+
+	assert.NotEmpty(t, cfg.URL)
+
+	CreateDatabase(ctx, logger, cfg.URL)
+
+	pool, err := pgxpool.New(ctx, ReplaceDbName(cfg.URL, "postgres"))
+	assert.NoError(t, err)
+	defer pool.Close()
+
+	row := pool.QueryRow(ctx, checkingSql, GetDatabaseName(cfg.URL))
+	err = row.Scan(&isExists)
+	assert.NoError(t, err)
+	assert.True(t, isExists)
+
+	dropDbSql := fmt.Sprintf("drop database if exists %s", GetDatabaseName(cfg.URL))
+	rows, err := pool.Query(ctx, dropDbSql)
+	assert.NoError(t, err)
+	assert.NotNil(t, rows)
+	rows.Close()
+}

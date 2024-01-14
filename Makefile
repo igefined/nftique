@@ -7,6 +7,11 @@ COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_DATE = $(shell date +"%Y-%m-%dT%H:%M:%S")
 LDFLAGS = -ldflags "-w -X ${PACKAGE}/internal/app.Version=${VERSION} -X ${PACKAGE}/internal/app.BuildDate=${BUILD_DATE} -X ${PACKAGE}/internal/app.Commit=${COMMIT}"
 
+ifneq (,$(wildcard .env))
+	include .env
+	export
+endif
+
 .PHONY: update
 update:
 	go mod tidy
@@ -16,7 +21,7 @@ bin/:
 	mkdir -p bin
 
 bin/golang-lint: | bin/
-	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2
+	@curl -sSfL https://raw.gcoverprofileithubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2
 
 .PHONY: lint
 lint: | bin/golang-lint
