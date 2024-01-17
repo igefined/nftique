@@ -31,6 +31,9 @@ var envs = []*EnvVar{
 	DefaultDBURL,
 	DefaultDBAutoCreate,
 	DefaultMigrationPath,
+
+	DefaultJWTSecretKey,
+	DefaultExpirationTime,
 }
 
 type (
@@ -59,16 +62,25 @@ type (
 	RateLimitCfg struct {
 		RedisLuaScriptPath string `mapstructure:"rate_limit_lua_script_path"`
 
-		AuthRate        float64 `mapstructure:"rate_limit_auth_rate"`
-		AuthMaxTokens   float64 `mapstructure:"rate_limit_auth_max_tokens"`
+		AuthRate      float64 `mapstructure:"rate_limit_auth_rate"`
+		AuthMaxTokens float64 `mapstructure:"rate_limit_auth_max_tokens"`
+
 		CommonRate      float64 `mapstructure:"rate_limit_common_rate"`
 		CommonMaxTokens float64 `mapstructure:"rate_limit_common_max_tokens"`
+
+		NFTsRate      float64 `mapstructure:"rate_limit_nfts_rate"`
+		NFTsMaxTokens float64 `mapstructure:"rate_limit_nfts_max_tokens"`
 	}
 
 	DBCfg struct {
 		URL                string `mapstructure:"db_url"`
 		MigrationsPath     string `mapstructure:"db_migrations_path"`
 		AutoCreateDatabase bool   `mapstructure:"db_auto_create_database"`
+	}
+
+	JWTCfg struct {
+		SecretKey      string        `mapstructure:"jwt_secret_key"`
+		ExpirationTime time.Duration `mapstructure:"jwt_expiration_time"`
 	}
 )
 

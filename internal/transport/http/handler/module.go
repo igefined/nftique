@@ -13,7 +13,6 @@ var Module = fx.Options(
 	rate_limiter.Module,
 	fx.Provide(
 		NewNFTHandler,
-		NewAuthHandler,
 		NewHandler,
 	),
 )
@@ -21,6 +20,5 @@ var Module = fx.Options(
 var Services = fx.Options(
 	fx.Provide(
 		fx.Annotate(service.NewNFTService, fx.As(new(NFTService))),
-		fx.Annotate(service.NewAuthService, fx.As(new(AuthService))),
 	),
 )

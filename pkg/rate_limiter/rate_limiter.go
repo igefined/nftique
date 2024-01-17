@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Auth   RequestType = "auth"
+	NFTs   RequestType = "nfts"
 	Common RequestType = "common"
 
 	Undefined RequestType = "undefined"

@@ -1,27 +1,20 @@
 package handler
 
 type Handler interface {
-	AuthHandler() *AuthHandler
 	NFTHandler() *NFTHandler
 }
 
 type handler struct {
-	nftHandler  *NFTHandler
-	authHandler *AuthHandler
+	nftHandler *NFTHandler
 }
 
 // nolint:ireturn
-func NewHandler(nftHandler *NFTHandler, authHandler *AuthHandler) Handler {
+func NewHandler(nftHandler *NFTHandler) Handler {
 	return &handler{
-		nftHandler:  nftHandler,
-		authHandler: authHandler,
+		nftHandler: nftHandler,
 	}
 }
 
 func (h handler) NFTHandler() *NFTHandler {
 	return h.nftHandler
-}
-
-func (h handler) AuthHandler() *AuthHandler {
-	return h.authHandler
 }

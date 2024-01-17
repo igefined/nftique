@@ -20,9 +20,9 @@ type settings struct {
 func NewSettings(cfg *config.RateLimitCfg) *Settings {
 	settingsMap := make(map[RequestType]*settings)
 
-	settingsMap[Auth] = &settings{
-		Rate:      cfg.AuthRate,
-		MaxTokens: cfg.AuthMaxTokens,
+	settingsMap[NFTs] = &settings{
+		Rate:      cfg.NFTsRate,
+		MaxTokens: cfg.NFTsMaxTokens,
 	}
 
 	settingsMap[Common] = &settings{

@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	UID           uuid.UUID  `json:"uid" db:"id"`
-	Web3Address   string     `json:"web3Address" db:"web3_address"`
+	Web3Address   string     `json:"web3_address" db:"web3_address"`
 	Username      string     `json:"username" db:"username"`
 	FirstName     string     `json:"first_name" db:"first_name"`
 	LastName      string     `json:"last_name" db:"last_name"`

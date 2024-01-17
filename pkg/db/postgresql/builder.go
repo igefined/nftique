@@ -98,7 +98,6 @@ func DropDatabase(ctx context.Context, log *zap.Logger, url string) {
 
 	var exists bool
 
-	checkingSql := `select exists(select datname from pg_catalog.pg_database where datname = $1) as exist`
 	row := conn.QueryRow(ctx, checkingSql, dbName)
 	if err = row.Scan(&exists); err != nil {
 		log.Error("autocreate db: failed to check the existence of the database", zap.Error(err))

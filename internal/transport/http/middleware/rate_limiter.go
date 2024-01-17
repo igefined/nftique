@@ -34,8 +34,8 @@ func GetClientIdentifierAndRequestType(ctx *fiber.Ctx) (string, rate_limiter.Req
 	}
 
 	url := ctx.Path()
-	if strings.Contains(url, "/auth") {
-		return ip, rate_limiter.Auth, nil
+	if strings.Contains(url, "/nfts") {
+		return ip, rate_limiter.NFTs, nil
 	}
 
 	return ip, rate_limiter.Common, nil

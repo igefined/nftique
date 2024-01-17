@@ -1,5 +1,7 @@
 package config
 
+import "time"
+
 const (
 	defaultServiceName = "nftique"
 	defaultNamespace   = "nftique_namespace"
@@ -143,5 +145,19 @@ var (
 		"DB_MIGRATIONS_PATH",
 		"internal/migrations/files",
 		"Database migrations path",
+	)
+
+	DefaultJWTSecretKey = NewEnvVar(
+		"jwt_secret_key",
+		"JWT_SECRET_KEY",
+		"secret",
+		"JWT secret key",
+	)
+
+	DefaultExpirationTime = NewEnvVar(
+		"jwt_expiration_minutes",
+		"JWT_EXPIRATION_MINUTES",
+		time.Minute*60,
+		"JWT expiration time in minutes",
 	)
 )

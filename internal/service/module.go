@@ -9,7 +9,6 @@ import (
 var Module = fx.Options(
 	fx.Provide(
 		NewNFTService,
-		NewAuthService,
 		fx.Annotate(repository.NewUserRepository, fx.As(new(UserRepository))),
 	),
 )
