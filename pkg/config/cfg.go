@@ -25,6 +25,8 @@ var envs = []*EnvVar{
 	DefaultRateLimitLuaScriptPath,
 	DefaultRateLimitAuthRate,
 	DefaultRateLimitAuthMaxTokens,
+	DefaultRateLimitNFTsRate,
+	DefaultRateLimitNFTsMaxTokens,
 	DefaultRateLimitCommonRate,
 	DefaultRateLimitCommonMaxTokens,
 
@@ -34,6 +36,11 @@ var envs = []*EnvVar{
 
 	DefaultJWTSecretKey,
 	DefaultExpirationTime,
+
+	DefaultEthRPCtUrl,
+	DefaultEthContractrAddr,
+	DefaultEthOperatorAddr,
+	DefaultEthOperatorPrivateKey,
 }
 
 type (
@@ -81,6 +88,13 @@ type (
 	JWTCfg struct {
 		SecretKey      string        `mapstructure:"jwt_secret_key"`
 		ExpirationTime time.Duration `mapstructure:"jwt_expiration_time"`
+	}
+
+	ETHCfg struct {
+		RPCUrl             string `mapstructure:"eth_rpc_url"`
+		ContractAddress    string `mapstructure:"eth_contract_address"`
+		OperatorAddr       string `mapstructure:"operator_address"`
+		OperatorPrivateKey string `mapstructure:"operator_private_key"`
 	}
 )
 

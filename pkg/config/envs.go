@@ -1,13 +1,18 @@
 package config
 
-import "time"
+import (
+	"net"
+	"time"
+)
 
 const (
+	localhost = "127.0.0.1"
+
 	defaultServiceName = "nftique"
 	defaultNamespace   = "nftique_namespace"
 	defaultHost        = "127.0.0.1"
 	defaultPort        = "8080"
-	defaultMonitorHost = "127.0.0.1"
+	defaultMonitorHost = localhost
 	defaultMonitorPort = "8090"
 	defaultEnvironment = "dev"
 
@@ -18,6 +23,8 @@ const (
 	defaultMaxTokens = 60
 
 	defaultDBURL = "postgres://postgres:postgres@localhost:5432/nftique?sslmode=disable"
+
+	ethRPCUrlPort = "8567"
 )
 
 var (
@@ -126,6 +133,20 @@ var (
 		"Rate limit common max tokens var",
 	)
 
+	DefaultRateLimitNFTsRate = NewEnvVar(
+		"rate_limit_nfts_rate",
+		"RATE_LIMIT_NFTS_RATE",
+		defaultRate,
+		"Rate limit NFTs rate var",
+	)
+
+	DefaultRateLimitNFTsMaxTokens = NewEnvVar(
+		"rate_limit_nfts_max_tokens",
+		"RATE_LIMIT_NFTS_MAX_TOKENS",
+		defaultMaxTokens,
+		"Rate limit NFTs max tokens var",
+	)
+
 	DefaultDBURL = NewEnvVar(
 		"db_url",
 		"DB_URL",
@@ -159,5 +180,33 @@ var (
 		"JWT_EXPIRATION_MINUTES",
 		time.Minute*60,
 		"JWT expiration time in minutes",
+	)
+
+	DefaultEthRPCtUrl = NewEnvVar(
+		"eth_rpc_url",
+		"ETH_RPC_URL",
+		net.JoinHostPort(localhost, ethRPCUrlPort),
+		"Ethereum rpc url",
+	)
+
+	DefaultEthContractrAddr = NewEnvVar(
+		"eth_contract_addr",
+		"ETH_CONTRACT_ADDR",
+		"",
+		"Ethereum contract address",
+	)
+
+	DefaultEthOperatorAddr = NewEnvVar(
+		"eth_operator_addr",
+		"ETH_OPERATOR_ADDR",
+		"",
+		"Ethereum operator address",
+	)
+
+	DefaultEthOperatorPrivateKey = NewEnvVar(
+		"eth_operator_private_key",
+		"ETH_OPERATOR_PRIVATE_KEY",
+		"",
+		"Ethereum operator private key",
 	)
 )
