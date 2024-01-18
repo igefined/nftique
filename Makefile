@@ -2,7 +2,7 @@ PACKAGE = $(shell go list -m)
 BUILD_DIR = build
 BINARY_NAME = nftique
 PWD = $(shell pwd)
-VERSION ?= $(shell git describe --exact-match --tags 2> /dev/null || head -1 CHANGELOG.md | cut -d ' ' -f 2)
+VERSION ?= $(shell git describe --exact-match --tags 2> /dev/null | cut -d ' ' -f 2)
 COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_DATE = $(shell date +"%Y-%m-%dT%H:%M:%S")
 LDFLAGS = -ldflags "-w -X ${PACKAGE}/internal/app.Version=${VERSION} -X ${PACKAGE}/internal/app.BuildDate=${BUILD_DATE} -X ${PACKAGE}/internal/app.Commit=${COMMIT}"

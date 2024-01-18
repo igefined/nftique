@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/igefined/nftique/pkg/config"
@@ -29,7 +27,7 @@ func New(log *zap.Logger, cfg *config.DBCfg, lc fx.Lifecycle) *QBuilder {
 	defer cancel()
 
 	if cfg.AutoCreateDatabase {
-		CreateDatabase(ctx, log, cfg.URL)
+		CreateDatabase(ctx, log, cfg)
 	}
 
 	psqlCfg, err := pgx.ParseConfigWithOptions(cfg.URL, pgx.ParseConfigOptions{})
@@ -62,9 +60,9 @@ func New(log *zap.Logger, cfg *config.DBCfg, lc fx.Lifecycle) *QBuilder {
 	return &QBuilder{conn, log}
 }
 
-func CreateDatabase(ctx context.Context, log *zap.Logger, url string) {
-	dbName := GetDatabaseName(url)
-	conn, err := pgxpool.New(ctx, ReplaceDbName(url, "postgres"))
+func CreateDatabase(ctx context.Context, log *zap.Logger, cfg *config.DBCfg) {
+	dbName := cfg.GetDatabaseName()
+	conn, err := pgxpool.New(ctx, ReplaceDbName(cfg.URL, "postgres"))
 	if err != nil {
 		log.Error("failed to make postgres connection for auto create", zap.Error(err))
 	}
@@ -88,9 +86,9 @@ func CreateDatabase(ctx context.Context, log *zap.Logger, url string) {
 	}
 }
 
-func DropDatabase(ctx context.Context, log *zap.Logger, url string) {
-	dbName := GetDatabaseName(url)
-	conn, err := pgxpool.New(ctx, url)
+func DropDatabase(ctx context.Context, log *zap.Logger, cfg *config.DBCfg) {
+	dbName := cfg.GetDatabaseName()
+	conn, err := pgxpool.New(ctx, cfg.URL)
 	if err != nil {
 		log.Error("failed to make postgres connection for auto create", zap.Error(err))
 	}
@@ -112,17 +110,6 @@ func DropDatabase(ctx context.Context, log *zap.Logger, url string) {
 			log.Info("autocreate db: database created successfully")
 		}
 	}
-}
-
-func GetDatabaseName(url string) string {
-	re := regexp.MustCompile(`(([0-9]+\/)([a-z_]+)+)`)
-	out := strings.Split(re.FindString(url), "/")
-
-	if len(out) == 2 {
-		return out[1]
-	}
-
-	return ""
 }
 
 func ReplaceDbName(dbUrl, dbName string) string {

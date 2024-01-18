@@ -9,19 +9,80 @@ import (
 
 	"github.com/igefined/nftique/pkg/config"
 	"github.com/igefined/nftique/pkg/log"
+	"github.com/igefined/nftique/test"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 )
 
-func TestGetDatabaseName(t *testing.T) {
-	const (
-		url    = "postgres://postgres:postgres@localhost:5466/test_clients?sslmode=disable"
-		expect = "test_clients"
-	)
+const defaultPostgresImage = "postgres:15.3-alpine"
 
-	assert.Equal(t, GetDatabaseName(url), expect)
+type Suite struct {
+	suite.Suite
+	ctx context.Context
+
+	cfg       *config.DBCfg
+	logger    *zap.Logger
+	container *test.PostgresContainer
+}
+
+func TestBuilderSuite(t *testing.T) {
+	suite.Run(t, new(Suite))
+}
+
+func (s *Suite) SetupSuite() {
+	logger, err := log.NewLogger(zap.DebugLevel)
+	s.Require().NoError(err)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	_ = cancel
+
+	type testConfig struct {
+		sync.RWMutex
+		config.DBCfg `mapstructure:",squash"`
+	}
+
+	var cfg *testConfig
+	s.Require().NoError(config.GetConfig(&cfg, []*config.EnvVar{}))
+	s.Require().NotEmpty(cfg.URL)
+
+	s.logger = logger
+	s.cfg = &cfg.DBCfg
+	s.ctx = ctx
+
+	pgContainer, err := test.NewPostgresContainer(ctx, s.cfg, &test.Opt{Enabled: true, Image: defaultPostgresImage})
+	s.Require().NoError(err)
+
+	s.container = pgContainer
+}
+
+func (s *Suite) TearDownSuite() {
+	if err := s.container.Terminate(s.ctx); err != nil {
+		s.logger.Error("error terminating postgres container", zap.Error(err))
+	}
+}
+
+func (s *Suite) TestCreateAndDropDatabase() {
+	var isExists bool
+
+	CreateDatabase(s.ctx, s.logger, s.cfg)
+
+	pool, err := pgxpool.New(s.ctx, ReplaceDbName(s.cfg.URL, "postgres"))
+	s.Require().NoError(err)
+	defer pool.Close()
+
+	row := pool.QueryRow(s.ctx, checkingSql, s.cfg.GetDatabaseName())
+	err = row.Scan(&isExists)
+	s.Require().NoError(err)
+	s.Require().True(isExists)
+
+	dropDbSql := fmt.Sprintf("drop database if exists %s", s.cfg.GetDatabaseName())
+	rows, err := pool.Query(s.ctx, dropDbSql)
+	s.Require().NoError(err)
+	s.Require().NotNil(rows)
+	rows.Close()
 }
 
 func TestReplaceDbName(t *testing.T) {
@@ -50,40 +111,4 @@ func TestReplaceDbName(t *testing.T) {
 	for _, c := range tCases {
 		assert.Equal(t, ReplaceDbName(c.srcUrl, c.dbName), c.resultUrl)
 	}
-}
-
-func TestCreateDatabase(t *testing.T) {
-	var isExists bool
-	logger, err := log.NewLogger(zap.DebugLevel)
-	assert.NoError(t, err)
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
-
-	type testConfig struct {
-		sync.RWMutex
-		config.DBCfg `mapstructure:",squash"`
-	}
-
-	var cfg *testConfig
-	assert.NoError(t, config.GetConfig(&cfg, []*config.EnvVar{}))
-
-	assert.NotEmpty(t, cfg.URL)
-
-	CreateDatabase(ctx, logger, cfg.URL)
-
-	pool, err := pgxpool.New(ctx, ReplaceDbName(cfg.URL, "postgres"))
-	assert.NoError(t, err)
-	defer pool.Close()
-
-	row := pool.QueryRow(ctx, checkingSql, GetDatabaseName(cfg.URL))
-	err = row.Scan(&isExists)
-	assert.NoError(t, err)
-	assert.True(t, isExists)
-
-	dropDbSql := fmt.Sprintf("drop database if exists %s", GetDatabaseName(cfg.URL))
-	rows, err := pool.Query(ctx, dropDbSql)
-	assert.NoError(t, err)
-	assert.NotNil(t, rows)
-	rows.Close()
 }

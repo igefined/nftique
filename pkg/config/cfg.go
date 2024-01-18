@@ -2,6 +2,8 @@ package config
 
 import (
 	"flag"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/spf13/pflag"
@@ -97,6 +99,39 @@ type (
 		OperatorPrivateKey string `mapstructure:"operator_private_key"`
 	}
 )
+
+func (c *DBCfg) GetDatabaseName() string {
+	re := regexp.MustCompile(`(([0-9]+\/)([a-z_]+)+)`)
+	out := strings.Split(re.FindString(c.URL), "/")
+
+	if len(out) == 2 {
+		return out[1]
+	}
+
+	return ""
+}
+
+func (c *DBCfg) GetDatabaseUser() string {
+	startIndex := strings.Index(c.URL, "//")
+	endIndex := strings.Index(c.URL, "@")
+
+	if startIndex != -1 && endIndex != -1 {
+		return strings.Split(c.URL[startIndex+2:endIndex], ":")[0]
+	}
+
+	return ""
+}
+
+func (c *DBCfg) GetDatabasePassword() string {
+	startIndex := strings.Index(c.URL, "//")
+	endIndex := strings.Index(c.URL, "@")
+
+	if startIndex != -1 && endIndex != -1 {
+		return strings.Split(c.URL[startIndex+2:endIndex], ":")[1]
+	}
+
+	return ""
+}
 
 func NewEnvVar(flag, env string, defaultValue interface{}, description string) *EnvVar {
 	return &EnvVar{Flag: flag, Env: env, Description: description, DefaultValue: defaultValue}

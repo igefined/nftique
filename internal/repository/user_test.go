@@ -1,226 +1,177 @@
 package repository
 
 import (
-	"context"
-	"errors"
-	"testing"
-
-	"github.com/igefined/nftique/internal/domain"
-
 	"github.com/Pallinder/go-randomdata"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
+	"github.com/igefined/nftique/internal/domain"
 )
 
-func TestGet(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
+func (s *Suite) TestUserRepository_Get() {
+	s.Run("success, exist", func() {
+		fUsr, err := s.createUser(s.ctx)
+		s.Require().NoError(err)
+
+		usr, err := s.repository.Get(s.ctx, fUsr.UID)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.UID, fUsr.UID)
 	})
 
-	repo := NewUserRepository(qb)
-
-	t.Run("success, exist", func(t *testing.T) {
-		ctx := context.Background()
-		fUsr, err := createUser(ctx)
-		assert.NoError(t, err)
-
-		usr, err := repo.Get(ctx, fUsr.UID)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.UID, fUsr.UID)
-	})
-
-	t.Run("success, not exist", func(t *testing.T) {
-		ctx := context.Background()
-
+	s.Run("success, not exist", func() {
 		uid := uuid.New()
-		usr, err := repo.Get(ctx, uid)
-		assert.Nil(t, usr)
-		assert.Error(t, err, domain.ErrEntityNotFound)
+		usr, err := s.repository.Get(s.ctx, uid)
+		s.Require().Nil(usr)
+		s.Require().Error(err, domain.ErrEntityNotFound)
 	})
+
+	s.clearDB()
 }
 
-func TestGetByWeb3Address(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
+func (s *Suite) TestUserRepository_GetByWeb3Address() {
+	s.Run("success, exist", func() {
+		fUsr, err := s.createUser(s.ctx)
+		s.Require().NoError(err)
+
+		usr, err := s.repository.GetByWeb3Address(s.ctx, fUsr.Web3Address)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.UID, fUsr.UID)
 	})
 
-	repo := NewUserRepository(qb)
-
-	t.Run("success, exist", func(t *testing.T) {
-		ctx := context.Background()
-		fUsr, err := createUser(ctx)
-		assert.NoError(t, err)
-
-		usr, err := repo.GetByWeb3Address(ctx, fUsr.Web3Address)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.UID, fUsr.UID)
-	})
-
-	t.Run("success, not exist", func(t *testing.T) {
-		ctx := context.Background()
-
+	s.Run("success, not exist", func() {
 		web3Address := "0x3E1D0cEd18A4454BA390b8F540682c718748b0e6"
-		usr, err := repo.GetByWeb3Address(ctx, web3Address)
-		assert.Nil(t, usr)
-		assert.Error(t, err, domain.ErrEntityNotFound)
+		usr, err := s.repository.GetByWeb3Address(s.ctx, web3Address)
+		s.Require().Nil(usr)
+		s.Require().Error(err, domain.ErrEntityNotFound)
 	})
+
+	s.clearDB()
 }
 
-func TestGetByUsername(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
+func (s *Suite) TestUserRepository_GetByUsername() {
+	s.Run("success, exist", func() {
+		fUsr, err := s.createUser(s.ctx)
+		s.Require().NoError(err)
+
+		usr, err := s.repository.GetByUsername(s.ctx, fUsr.Username)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.UID, fUsr.UID)
 	})
 
-	repo := NewUserRepository(qb)
-
-	t.Run("success, exist", func(t *testing.T) {
-		ctx := context.Background()
-		fUsr, err := createUser(ctx)
-		assert.NoError(t, err)
-
-		usr, err := repo.GetByUsername(ctx, fUsr.Username)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.UID, fUsr.UID)
-	})
-
-	t.Run("success, not exist", func(t *testing.T) {
-		ctx := context.Background()
-
+	s.Run("success, not exist", func() {
 		username := "invalid_username"
-		usr, err := repo.GetByUsername(ctx, username)
-		assert.Nil(t, usr)
-		assert.Error(t, err, domain.ErrEntityNotFound)
+		usr, err := s.repository.GetByUsername(s.ctx, username)
+		s.Require().Nil(usr)
+		s.Require().Error(err, domain.ErrEntityNotFound)
 	})
+
+	s.clearDB()
 }
 
-func TestCreateUser(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
+func (s *Suite) TestUserRepository_CreateUser() {
+	s.Run("success", func() {
+		fUsr := fakeUser()
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
+
+		usr, err := s.repository.GetByUsername(s.ctx, fUsr.Username)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.UID, fUsr.UID)
 	})
 
-	var repo = NewUserRepository(qb)
-
-	t.Run("success", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("duplicate web3_address", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
-
-		usr, err := repo.GetByUsername(ctx, fUsr.Username)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.UID, fUsr.UID)
-	})
-
-	t.Run("duplicate web3_address", func(t *testing.T) {
-		ctx := context.Background()
-		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := fakeUser()
 		fUsr2.Web3Address = fUsr.Web3Address
-		err = repo.CreateUser(ctx, fUsr2)
-		assert.Error(t, err, domain.ErrEntityDuplicate)
+		err = s.repository.CreateUser(s.ctx, fUsr2)
+		s.Require().Error(err, domain.ErrEntityDuplicate)
 	})
+
+	s.clearDB()
 }
 
-func TestDeactivateUser(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
-	})
-
-	var repo = NewUserRepository(qb)
-
-	t.Run("success", func(t *testing.T) {
-		ctx := context.Background()
+func (s *Suite) TestUserRepository_DeactivateUser() {
+	s.Run("success", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
-		err = repo.DeactivateUser(ctx, fUsr.UID)
-		assert.NoError(t, err)
+		err = s.repository.DeactivateUser(s.ctx, fUsr.UID)
+		s.Require().NoError(err)
 
-		usr, err := repo.GetByUsername(ctx, fUsr.Username)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.UID, fUsr.UID)
-		assert.NotNil(t, usr.DeactivatedAt)
+		usr, err := s.repository.GetByUsername(s.ctx, fUsr.Username)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.UID, fUsr.UID)
+		s.Require().NotNil(usr.DeactivatedAt)
 	})
+
+	s.clearDB()
 }
 
-func TestUpdateUser(t *testing.T) {
-	t.Cleanup(func() {
-		clearDB(t)
-	})
-
-	var repo = NewUserRepository(qb)
-
-	t.Run("success, all params", func(t *testing.T) {
-		ctx := context.Background()
+func (s *Suite) TestUserRepository_UpdateUser() {
+	s.Run("success, all params", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := fakeUser()
 		fUsr2.UID = fUsr.UID
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.LastName, fUsr2.LastName)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.LastName, fUsr2.LastName)
 	})
 
-	t.Run("success, only last name", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("success, only last name", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := &domain.User{
 			UID:      fUsr.UID,
 			LastName: randomdata.LastName(),
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.LastName, fUsr2.LastName)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.LastName, fUsr2.LastName)
 	})
 
-	t.Run("success, only username", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("success, only username", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := &domain.User{
 			UID:      fUsr.UID,
 			Username: randomdata.SillyName(),
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.Username, fUsr2.Username)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.Username, fUsr2.Username)
 	})
 
-	t.Run("success, only first name", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("success, only first name", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := &domain.User{
 			UID:       fUsr.UID,
 			FirstName: randomdata.FirstName(randomdata.RandomGender),
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.FirstName, fUsr2.FirstName)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.FirstName, fUsr2.FirstName)
 	})
 
-	t.Run("success, username and last name", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("success, username and last name", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := &domain.User{
 			UID:      fUsr.UID,
@@ -228,14 +179,13 @@ func TestUpdateUser(t *testing.T) {
 			Username: randomdata.SillyName(),
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.NoError(t, err)
-		assert.Equal(t, usr.LastName, fUsr2.LastName)
-		assert.Equal(t, usr.Username, fUsr2.Username)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().NoError(err)
+		s.Require().Equal(usr.LastName, fUsr2.LastName)
+		s.Require().Equal(usr.Username, fUsr2.Username)
 	})
 
-	t.Run("err, user does not exist", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("err, user does not exist", func() {
 		fUsr := fakeUser()
 
 		fUsr2 := &domain.User{
@@ -244,49 +194,29 @@ func TestUpdateUser(t *testing.T) {
 			Username: randomdata.SillyName(),
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr.UID, fUsr2)
-		assert.Error(t, err, domain.ErrEntityNotFound)
-		assert.Nil(t, usr)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr.UID, fUsr2)
+		s.Require().Error(err, domain.ErrEntityNotFound)
+		s.Require().Nil(usr)
 	})
 
-	t.Run("err, username already exist", func(t *testing.T) {
-		ctx := context.Background()
+	s.Run("err, username already exist", func() {
 		fUsr := fakeUser()
-		err := repo.CreateUser(ctx, fUsr)
-		assert.NoError(t, err)
+		err := s.repository.CreateUser(s.ctx, fUsr)
+		s.Require().NoError(err)
 
 		fUsr2 := fakeUser()
-		err = repo.CreateUser(ctx, fUsr2)
-		assert.NoError(t, err)
+		err = s.repository.CreateUser(s.ctx, fUsr2)
+		s.Require().NoError(err)
 
 		fUsr3 := &domain.User{
 			UID:      fUsr2.UID,
 			Username: fUsr.Username,
 		}
 
-		usr, err := repo.UpdateUser(ctx, fUsr2.UID, fUsr3)
-		assert.Nil(t, usr)
-		assert.Error(t, err, domain.ErrEntityDuplicate)
+		usr, err := s.repository.UpdateUser(s.ctx, fUsr2.UID, fUsr3)
+		s.Require().Nil(usr)
+		s.Require().Error(err, domain.ErrEntityDuplicate)
 	})
-}
 
-func fakeUser() *domain.User {
-	return &domain.User{
-		UID:         uuid.New(),
-		FirstName:   randomdata.FirstName(randomdata.RandomGender),
-		LastName:    randomdata.LastName(),
-		Username:    randomdata.PhoneNumber(),
-		Web3Address: randomdata.Address(),
-	}
-}
-
-func createUser(ctx context.Context) (*domain.User, error) {
-	usr := fakeUser()
-	q := `insert into users(id, web3_address, first_name, last_name, username) values ($1, $2, $3, $4, $5)`
-	_, err := qb.Querier().Exec(ctx, q, usr.UID, usr.Web3Address, usr.FirstName, usr.LastName, usr.Username)
-	if err != nil {
-		return nil, errors.New("error inserted fake user")
-	}
-
-	return usr, err
+	s.clearDB()
 }
