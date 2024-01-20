@@ -20,12 +20,13 @@ update:
 bin/:
 	mkdir -p bin
 
-bin/golang-lint: | bin/
-	@curl -sSfL https://raw.gcoverprofileithubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.55.2
+.PHONY: intstall-linter
+install-linter:
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 
 .PHONY: lint
-lint: | bin/golang-lint
-	@PATH="$(realpath bin):$$PATH" golangci-lint run
+lint: install-linter
+	@golangci-lint run -v
 
 .PHONY: test
 test:
