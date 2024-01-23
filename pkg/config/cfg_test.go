@@ -195,3 +195,30 @@ func TestGetDatabasePassword(t *testing.T) {
 		assert.Equal(t, c.expected, cfg.GetDatabasePassword())
 	}
 }
+
+func TestGetDatabasePort(t *testing.T) {
+	tCases := []struct {
+		url      string
+		expected string
+	}{
+		{
+			url:      "postgres://postgres:postgres@localhost:5466/test?sslmode=disable",
+			expected: "5466",
+		},
+		{
+			url:      "postgres://root:12345@localhost:5432/test",
+			expected: "5432",
+		},
+		{
+			url:      "postgres://docker:pass@localhost:9090/common?sslmode=disable&pool_max_conns=16&pool_max_conn_idle_time=30m&pool_max_conn_lifetime=1h&pool_health_check_period=1m", //nolint:lll
+			expected: "9090",
+		},
+	}
+
+	for _, c := range tCases {
+		cfg := DBCfg{
+			URL: c.url,
+		}
+		assert.Equal(t, c.expected, cfg.GetDatabasePort())
+	}
+}

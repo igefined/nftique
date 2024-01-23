@@ -38,8 +38,7 @@ func NewPostgresContainer(ctx context.Context, cfg *cfg.DBCfg, opt *Opt) (*Postg
 		return nil, err
 	}
 
-	// todo GetDatabasePort() instead const 5432
-	cfg.URL = strings.Replace(cfg.URL, "5432", port.Port(), 1)
+	cfg.URL = strings.Replace(cfg.URL, cfg.GetDatabasePort(), port.Port(), 1)
 
 	fmt.Printf("PostgresContainer: mapped port %s\n", port.Port())
 

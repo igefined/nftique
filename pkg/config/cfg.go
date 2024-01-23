@@ -2,6 +2,8 @@ package config
 
 import (
 	"flag"
+	"net"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -131,6 +133,20 @@ func (c *DBCfg) GetDatabasePassword() string {
 	}
 
 	return ""
+}
+
+func (c *DBCfg) GetDatabasePort() string {
+	u, err := url.Parse(c.URL)
+	if err != nil {
+		return ""
+	}
+
+	_, port, err := net.SplitHostPort(u.Host)
+	if err != nil {
+		return ""
+	}
+
+	return port
 }
 
 func NewEnvVar(flag, env string, defaultValue interface{}, description string) *EnvVar {
