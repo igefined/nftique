@@ -2,11 +2,11 @@ package sys
 
 import (
 	"errors"
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/adaptor"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -66,13 +66,11 @@ func NewPrometheus(namespace, subsystem, serviceName string) *Prometheus {
 	}
 }
 
-func (p *Prometheus) RegisterAt(app *fiber.App, url string) {
-	p.defaultUrl = url
-
-	app.Use(url, adaptor.HTTPHandler(promhttp.HandlerFor(p.gatherer, promhttp.HandlerOpts{})))
+func (p *Prometheus) Handler() http.Handler {
+	return promhttp.HandlerFor(p.gatherer, promhttp.HandlerOpts{})
 }
 
-func (p *Prometheus) Middleware(ctx *fiber.Ctx) error {
+func (p *Prometheus) FiberMiddleware(ctx *fiber.Ctx) error {
 	start := time.Now()
 	method := ctx.Route().Method
 

@@ -8,7 +8,6 @@ import (
 	cfg "github.com/igefined/nftique/pkg/config"
 	db "github.com/igefined/nftique/pkg/db/postgresql"
 	"github.com/igefined/nftique/pkg/log"
-	"github.com/igefined/nftique/pkg/sys"
 	"github.com/igefined/nftique/pkg/validator"
 
 	"go.uber.org/fx"
@@ -18,7 +17,6 @@ import (
 var Module = fx.Options(
 	fx.Provide(func() context.Context { return cfg.SigTermIntCtx() }), //nolint:gocritic
 	log.Module,
-	sys.Module,
 	config.Module,
 	validator.Module,
 	WebServerModule,
@@ -52,8 +50,8 @@ var Module = fx.Options(
 
 					return nil
 				},
-				OnStop: func(_ context.Context) error {
-					return webServer.ShutDownServer()
+				OnStop: func(ctx context.Context) error {
+					return webServer.ShutDownServer(ctx)
 				},
 			})
 		},

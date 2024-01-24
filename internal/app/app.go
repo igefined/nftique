@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/igefined/nftique/internal/config"
@@ -12,6 +13,8 @@ import (
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
+
+const Name = "nftique"
 
 var (
 	// ldflags
@@ -34,25 +37,39 @@ type WebServer struct {
 
 	// apps
 	app  *fiber.App
+	sys  *sys.Sys
 	http *http.App
-	sys  *sys.App
 }
 
-func NewWebServer(cfg *config.Config, logger *zap.Logger, sys *sys.App, httpServer *http.App) *WebServer {
-	return &WebServer{cfg: cfg, logger: logger, sys: sys, http: httpServer, app: fiber.New()}
+func NewWebServer(cfg *config.Config, logger *zap.Logger, httpServer *http.App) *WebServer {
+	inf := sys.NewAppInfo(Name).
+		WithVersion(Version).WithBuildCommit(Commit).WithBuildTime(BuildDate)
+	sysServer := sys.NewSys(logger, &cfg.MainCfg, inf)
+
+	instance := &WebServer{
+		cfg:    cfg,
+		logger: logger,
+		http:   httpServer,
+		sys:    sysServer,
+		app:    fiber.New(),
+	}
+
+	return instance
 }
 
 func (s *WebServer) StartServer() error {
-	prometheus := sys.NewPrometheus(s.cfg.Namespace, s.cfg.Environment, s.cfg.ServiceName)
-	prometheus.RegisterAt(s.app, "/system/metrics")
-	s.app.Use(prometheus.Middleware)
-
-	s.app.Mount("/system", s.sys.App)
+	s.app.Use(s.sys.PrometheusMiddleware())
 	s.app.Mount("/api", s.http.App)
+
+	s.sys.Start()
 
 	return s.app.Listen(fmt.Sprintf(":%s", s.cfg.Port))
 }
 
-func (s *WebServer) ShutDownServer() error {
+func (s *WebServer) ShutDownServer(ctx context.Context) error {
+	if err := s.sys.Stop(ctx); err != nil {
+		return err
+	}
+
 	return s.app.Shutdown()
 }
