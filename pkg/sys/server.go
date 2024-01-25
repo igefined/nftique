@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/pprof"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -44,7 +45,24 @@ func NewSys(lg *zap.Logger, cfg *cfg.MainCfg, appInfo *AppInfo) *Sys {
 
 func (s *Sys) initRoutes() {
 	s.mux.Handle("/metrics", s.prometheus.Handler())
+
+	// version
 	s.mux.HandleFunc("/version", s.VersionHandler)
+
+	// k8s probes
+	s.mux.HandleFunc("/ready", s.ReadyHandler)
+	s.mux.HandleFunc("/live", s.LiveHandler)
+
+	// pprof
+	s.mux.HandleFunc("/debug/pprof/", pprof.Index)
+	s.mux.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
+	s.mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	s.mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	s.mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	s.mux.Handle("/debug/pprof/goroutine", pprof.Handler("goroutine"))
+	s.mux.Handle("/debug/pprof/heap", pprof.Handler("heap"))
+	s.mux.Handle("/debug/pprof/block", pprof.Handler("block"))
+	s.mux.Handle("/debug/pprof/threadcreate", pprof.Handler("threadcreate"))
 }
 
 func (s *Sys) Start() {
