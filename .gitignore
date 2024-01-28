@@ -3,6 +3,8 @@
 .idea
 /deployment/data
 
+.DS_Store
+
 .env
 .cover
 coverage.html

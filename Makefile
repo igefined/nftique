@@ -48,3 +48,10 @@ run: build
 .PHONY: deploy-local
 deploy-local:
 	cd deployment/local && docker-compose up -d
+
+.PHONY: generate-abigen
+generate-abigen:
+	rm -rf abi/
+	wget https://github.com/igefined/nftique-smartcontracts/releases/download/${VERSION}/release-${VERSION}.zip
+	unzip release-${VERSION}.zip -d ./
+	rm -rf release-${VERSION}.zip

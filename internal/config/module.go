@@ -17,4 +17,7 @@ var Module = fx.Options(
 	fx.Provide(func(cfg *Config) *config.DBCfg {
 		return &cfg.DBCfg
 	}),
+	fx.Provide(func(cfg *Config) *config.ETHCfg {
+		return &cfg.ETHCfg
+	}),
 )

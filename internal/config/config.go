@@ -12,6 +12,7 @@ type Config struct {
 	config.RedisCfg     `mapstructure:",squash"`
 	config.RateLimitCfg `mapstructure:",squash"`
 	config.DBCfg        `mapstructure:",squash"`
+	config.ETHCfg       `mapstructure:",squash"`
 }
 
 func New() (*Config, error) {

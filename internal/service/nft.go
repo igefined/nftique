@@ -1,11 +1,18 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"crypto/ecdsa"
+	"fmt"
 	"math/rand"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/igefined/nftique/internal/domain"
+	"github.com/igefined/nftique/pkg/config"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -22,11 +29,58 @@ type UserRepository interface {
 }
 
 type NFTService struct {
+	cfg    *config.ETHCfg
 	logger *zap.Logger
+
+	client             *ethclient.Client
+	operatorAddress    common.Address
+	nftMarketplaceAddr common.Address
 }
 
-func NewNFTService(logger *zap.Logger) *NFTService {
-	return &NFTService{logger: logger}
+func NewNFTService(
+	cfg *config.ETHCfg,
+	logger *zap.Logger,
+) (*NFTService, error) {
+	client, err := ethclient.Dial(cfg.RPCUrl)
+	if err != nil {
+		return nil, fmt.Errorf("error create eth client")
+	}
+
+	privKey, err := getPrivateKey(cfg)
+	if err != nil {
+		return nil, fmt.Errorf("generate private key error, err: %s", err.Error())
+	}
+
+	publicKey := privKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		panic(fmt.Sprintf("get public key error, err: %s", err.Error()))
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	if !bytes.Equal(common.HexToAddress(cfg.OperatorAddr).Bytes(), fromAddress.Bytes()) {
+		return nil, fmt.Errorf(
+			"relayer address supplied in config (%s) does not match mnemonic (%s)",
+			cfg.OperatorAddr, fromAddress,
+		)
+	}
+
+	return &NFTService{
+		cfg:                cfg,
+		logger:             logger,
+		client:             client,
+		operatorAddress:    common.HexToAddress(cfg.OperatorAddr),
+		nftMarketplaceAddr: common.HexToAddress(cfg.ContractAddress),
+	}, nil
+}
+
+func getPrivateKey(config *config.ETHCfg) (*ecdsa.PrivateKey, error) {
+	privKey, err := crypto.HexToECDSA(config.OperatorPrivateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return privKey, nil
 }
 
 func (s *NFTService) ListAllAvailable(ctx context.Context) ([]*domain.NFT, error) {
