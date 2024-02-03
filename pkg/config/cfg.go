@@ -41,10 +41,10 @@ var envs = []*EnvVar{
 	DefaultJWTSecretKey,
 	DefaultExpirationTime,
 
-	DefaultEthRPCtUrl,
-	DefaultEthContractrAddr,
-	DefaultEthOperatorAddr,
-	DefaultEthOperatorPrivateKey,
+	DefaultChainRPCtUrl,
+	DefaultContractorAddr,
+	DefaultOperatorAddr,
+	DefaultOperatorPrivateKey,
 }
 
 type (
@@ -95,8 +95,8 @@ type (
 	}
 
 	ETHCfg struct {
-		RPCUrl             string `mapstructure:"eth_rpc_url"`
-		ContractAddress    string `mapstructure:"eth_contract_address"`
+		RPCUrl             string `mapstructure:"chain_rpc_url"`
+		ContractAddress    string `mapstructure:"contract_address"`
 		OperatorAddr       string `mapstructure:"operator_address"`
 		OperatorPrivateKey string `mapstructure:"operator_private_key"`
 	}

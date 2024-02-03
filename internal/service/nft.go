@@ -54,7 +54,7 @@ func NewNFTService(
 	publicKey := privKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		panic(fmt.Sprintf("get public key error, err: %s", err.Error()))
+		return nil, fmt.Errorf("get public key error")
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -83,7 +83,7 @@ func getPrivateKey(config *config.ETHCfg) (*ecdsa.PrivateKey, error) {
 	return privKey, nil
 }
 
-func (s *NFTService) ListAllAvailable(ctx context.Context) ([]*domain.NFT, error) {
+func (s *NFTService) ListAllAvailable(_ context.Context) ([]*domain.NFT, error) {
 	size := rand.Intn(10)
 	mockNFTs := make([]*domain.NFT, size)
 

@@ -1,7 +1,6 @@
 package config
 
 import (
-	"net"
 	"time"
 )
 
@@ -24,7 +23,7 @@ const (
 
 	defaultDBURL = "postgres://postgres:postgres@localhost:5432/nftique?sslmode=disable"
 
-	ethRPCUrlPort = "8567"
+	defaultChainRPC = "http://127.0.0.1:8567"
 )
 
 var (
@@ -182,31 +181,31 @@ var (
 		"JWT expiration time in minutes",
 	)
 
-	DefaultEthRPCtUrl = NewEnvVar(
-		"eth_rpc_url",
-		"ETH_RPC_URL",
-		net.JoinHostPort(localhost, ethRPCUrlPort),
-		"Ethereum rpc url",
+	DefaultChainRPCtUrl = NewEnvVar(
+		"chain_rpc_url",
+		"CHAIN_RPC_URL",
+		defaultChainRPC,
+		"Blockchain rpc url",
 	)
 
-	DefaultEthContractrAddr = NewEnvVar(
-		"eth_contract_addr",
-		"ETH_CONTRACT_ADDR",
+	DefaultContractorAddr = NewEnvVar(
+		"contractor_address",
+		"CONTRACT_ADDRESS",
 		"",
-		"Ethereum contract address",
+		"Blockchain contract address",
 	)
 
-	DefaultEthOperatorAddr = NewEnvVar(
-		"eth_operator_addr",
-		"ETH_OPERATOR_ADDR",
+	DefaultOperatorAddr = NewEnvVar(
+		"operator_address",
+		"OPERATOR_ADDRESS",
 		"",
-		"Ethereum operator address",
+		"Blockchain operator address",
 	)
 
-	DefaultEthOperatorPrivateKey = NewEnvVar(
-		"eth_operator_private_key",
-		"ETH_OPERATOR_PRIVATE_KEY",
+	DefaultOperatorPrivateKey = NewEnvVar(
+		"operator_private_key",
+		"OPERATOR_PRIVATE_KEY",
 		"",
-		"Ethereum operator private key",
+		"Blockchain operator private key",
 	)
 )
