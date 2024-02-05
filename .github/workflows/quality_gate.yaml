@@ -10,9 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check docker version
-        run: docker --version
-
       - name: Set up Go
         uses: actions/setup-go@v4
         with:

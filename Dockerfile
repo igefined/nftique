@@ -14,7 +14,8 @@ RUN go mod download
 
 COPY . .
 WORKDIR /app
-RUN make test && make build && \
+
+RUN make build && \
     cp build/nftique /nftique
 
 FROM alpine:3.9

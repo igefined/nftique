@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nftique-backend-server
+spec:
+  containers:
+    - name: nftique
+      image: igefined/kuber:latest
+      ports:
+        - containerPort: 8000

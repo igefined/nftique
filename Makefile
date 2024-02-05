@@ -49,9 +49,14 @@ run: build
 deploy-local:
 	cd deployment/local && docker-compose up -d
 
+.PHONY: deploy-image
+deploy-image:
+	docker build -t igefined/nftique:${TAG} .
+	docker push igefined/nftique:${TAG}
+
 .PHONY: generate-abigen
 generate-abigen:
 	rm -rf abi/
-	wget https://github.com/igefined/nftique-smartcontracts/releases/download/${VERSION}/release-${VERSION}.zip
-	unzip release-${VERSION}.zip -d ./
-	rm -rf release-${VERSION}.zip
+	wget https://github.com/igefined/nftique-smartcontracts/releases/download/${CONTRACTS_VERSION}/release-${CONTRACTS_VERSION}.zip
+	unzip release-${CONTRACTS_VERSION}.zip -d ./
+	rm -rf release-${CONTRACTS_VERSION}.zip
