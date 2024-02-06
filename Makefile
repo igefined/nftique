@@ -49,10 +49,9 @@ run: build
 deploy-local:
 	cd deployment/local && docker-compose up -d
 
-.PHONY: deploy-image
-deploy-image:
+.PHONY: build-image
+build-image:
 	docker build -t igefined/nftique:${TAG} .
-	docker push igefined/nftique:${TAG}
 
 .PHONY: generate-abigen
 generate-abigen:

@@ -49,5 +49,9 @@ jobs:
       - name: Push docker image
         env:
           TAG: ${{ env.TAG }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          make deploy-image
+          make build-image
+          docker login -u=${DOCKER_USERNAME} -p=${DOCKER_PASSWORD}
+          docker push igefined/nftique:${TAG}
