@@ -8,3 +8,9 @@ type NFT struct {
 	Img       string    `json:"img"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type NFTMedia struct {
+	Date         string
+	Url          string
+	LastModified time.Time
+}

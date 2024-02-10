@@ -4,6 +4,7 @@ go 1.21.3
 
 require (
 	github.com/Pallinder/go-randomdata v1.2.0
+	github.com/aws/aws-sdk-go v1.50.15
 	github.com/ethereum/go-ethereum v1.13.10
 	github.com/georgysavva/scany/v2 v2.1.0
 	github.com/go-playground/validator/v10 v10.17.0
@@ -65,6 +66,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lib/pq v1.10.9 // indirect

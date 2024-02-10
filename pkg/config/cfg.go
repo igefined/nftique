@@ -45,6 +45,12 @@ var envs = []*EnvVar{
 	DefaultContractorAddr,
 	DefaultOperatorAddr,
 	DefaultOperatorPrivateKey,
+
+	DefaultAWSAccessKey,
+	DefaultAWSSecretKey,
+	DefaultAWSRegion,
+
+	DefaultS3NFTBucketName,
 }
 
 type (
@@ -99,6 +105,16 @@ type (
 		ContractAddress    string `mapstructure:"contract_address"`
 		OperatorAddr       string `mapstructure:"operator_address"`
 		OperatorPrivateKey string `mapstructure:"operator_private_key"`
+	}
+
+	AWSCfg struct {
+		AWSAccessKey string `mapstructure:"aws_access_key"`
+		AWSSecretKey string `mapstructure:"aws_secret_key"`
+		AWSRegion    string `mapstructure:"aws_region"`
+	}
+
+	S3 struct {
+		NFTBucketName string `mapstructure:"s3_nft_bucket_name"`
 	}
 )
 

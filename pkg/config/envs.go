@@ -1,8 +1,6 @@
 package config
 
-import (
-	"time"
-)
+import "time"
 
 const (
 	localhost = "127.0.0.1"
@@ -207,5 +205,33 @@ var (
 		"OPERATOR_PRIVATE_KEY",
 		"",
 		"Blockchain operator private key",
+	)
+
+	DefaultAWSAccessKey = NewEnvVar(
+		"aws_access_key",
+		"AWS_ACCESS_KEY",
+		"",
+		"AWS Access Key",
+	)
+
+	DefaultAWSSecretKey = NewEnvVar(
+		"aws_secret_key",
+		"AWS_SECRET_KEY",
+		"",
+		"AWS Secret Key",
+	)
+
+	DefaultAWSRegion = NewEnvVar(
+		"aws_region",
+		"AWS_REGION",
+		"",
+		"AWS Region",
+	)
+
+	DefaultS3NFTBucketName = NewEnvVar(
+		"s3_nft_bucket_name",
+		"S3_NFT_BUCKET_NAME",
+		"",
+		"S3 NFT bucket name",
 	)
 )
