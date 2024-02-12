@@ -18,7 +18,7 @@ import (
 	"go.uber.org/zap"
 )
 
-//go:generate mockgen -source=auth.go -package=mocks -destination=./mocks/mock_user.go UserRepository
+//go:generate mockgen -source=nft.go -package=mocks -destination=./mocks/mock_user.go UserRepository
 
 type UserRepository interface {
 	GetByWeb3Address(ctx context.Context, web3Address string) (*domain.User, error)

@@ -1,6 +1,11 @@
 package s3
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var ErrNoContents = errors.New("no contents")
 
 type Media struct {
 	Filename     string
