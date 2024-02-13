@@ -210,28 +210,28 @@ var (
 	DefaultAWSAccessKey = NewEnvVar(
 		"aws_access_key",
 		"AWS_ACCESS_KEY",
-		"",
+		"aws_access_key",
 		"AWS Access Key",
 	)
 
 	DefaultAWSSecretKey = NewEnvVar(
 		"aws_secret_key",
 		"AWS_SECRET_KEY",
-		"",
+		"aws_secret_key",
 		"AWS Secret Key",
 	)
 
 	DefaultAWSRegion = NewEnvVar(
 		"aws_region",
 		"AWS_REGION",
-		"",
+		"eu-north-1",
 		"AWS Region",
 	)
 
 	DefaultS3NFTBucketName = NewEnvVar(
 		"s3_nft_bucket_name",
 		"S3_NFT_BUCKET_NAME",
-		"",
+		"nftbucketname",
 		"S3 NFT bucket name",
 	)
 )
