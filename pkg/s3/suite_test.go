@@ -10,9 +10,9 @@ import (
 	"github.com/igefined/nftique/pkg/log"
 	"github.com/igefined/nftique/test"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/stretchr/testify/suite"
 	"go.uber.org/zap"
 )

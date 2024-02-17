@@ -3,13 +3,12 @@ package s3
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-
 	cfg "github.com/igefined/nftique/pkg/config"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 //go:generate mockgen -source=client.go -package=mocks -destination=./mocks/mock_s3.go S3
@@ -21,27 +20,26 @@ type S3 interface {
 
 type Client struct {
 	awsCfg   *cfg.AWSCfg
-	client   *s3.S3
-	uploader *s3manager.Uploader
+	client   *s3.Client
+	uploader *manager.Uploader
 
 	bucketName string
 }
 
 //nolint:ireturn
 func New(awsCfg *cfg.AWSCfg, opts ...Opt) (*Client, error) {
-	sess, err := session.NewSession(&aws.Config{
-		Credentials: credentials.NewStaticCredentials(awsCfg.AWSAccessKey, awsCfg.AWSSecretKey, ""),
-		Region:      aws.String(awsCfg.AWSRegion)},
-	)
-	if err != nil {
-		return nil, err
+	options := s3.Options{
+		Region: awsCfg.AWSRegion,
+		Credentials: aws.NewCredentialsCache(
+			credentials.NewStaticCredentialsProvider(awsCfg.AWSAccessKey, awsCfg.AWSSecretKey, "")),
 	}
 
-	client := s3.New(sess)
+	s3Client := s3.New(options)
 
 	instance := &Client{
-		awsCfg: awsCfg,
-		client: client,
+		awsCfg:   awsCfg,
+		client:   s3Client,
+		uploader: manager.NewUploader(s3Client),
 	}
 
 	for _, opt := range opts {

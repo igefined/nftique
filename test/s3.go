@@ -47,10 +47,10 @@ func NewS3Container(ctx context.Context, cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *O
 }
 
 func (c *S3Container) S3Client() (*s3.Client, error) {
-	fmt.Println("S3 container host", c.endpoint)
 	options := s3.Options{
-		Region:       c.awsCfg.AWSRegion,
+		// Region:       c.awsCfg.AWSRegion,
 		BaseEndpoint: aws.String(c.endpoint),
+		UsePathStyle: true,
 		Credentials: aws.NewCredentialsCache(
 			credentials.NewStaticCredentialsProvider(c.awsCfg.AWSAccessKey, c.awsCfg.AWSSecretKey, "")),
 	}

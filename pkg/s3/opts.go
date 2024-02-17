@@ -9,7 +9,6 @@ var ErrNoContents = errors.New("no contents")
 
 type Media struct {
 	Filename     string
-	Date         string
 	Url          string
 	LastModified time.Time
 }

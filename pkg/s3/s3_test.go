@@ -1,6 +1,8 @@
 package s3
 
-import "crypto/rand"
+import (
+	"crypto/rand"
+)
 
 const testFilename = "test_filename"
 
