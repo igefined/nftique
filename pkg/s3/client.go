@@ -31,7 +31,7 @@ func New(awsCfg *cfg.AWSCfg, opts ...Opt) (*Client, error) {
 	options := s3.Options{
 		Region: awsCfg.AWSRegion,
 		Credentials: aws.NewCredentialsCache(
-			credentials.NewStaticCredentialsProvider(awsCfg.AWSAccessKey, awsCfg.AWSSecretKey, "")),
+			credentials.NewStaticCredentialsProvider(awsCfg.AWSAccessKeyID, awsCfg.AWSSecretKey, "")),
 	}
 
 	s3Client := s3.New(options)

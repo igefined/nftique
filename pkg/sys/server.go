@@ -34,7 +34,7 @@ func NewSys(lg *zap.Logger, cfg *cfg.MainCfg, appInfo *AppInfo) *Sys {
 		lg:         lg,
 		cfg:        cfg,
 		appInfo:    appInfo,
-		prometheus: NewPrometheus(cfg.Namespace, cfg.Environment, cfg.ServiceName),
+		prometheus: NewPrometheus(cfg.Namespace, cfg.Environment, appInfo.AppName),
 		mux:        http.NewServeMux(),
 	}
 

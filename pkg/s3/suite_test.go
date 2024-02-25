@@ -59,8 +59,9 @@ func (s *Suite) SetupSuite() {
 
 	s3Container, err := test.NewS3Container(ctx, s.s3Cfg, s.awsCfg, &test.Opt{Enabled: true, Image: defaultImage})
 	s.Require().NoError(err)
+	s.Require().True(s3Container.IsRunning())
 
-	s3Client, err := s3Container.S3Client()
+	s3Client, err := s3Container.S3Client(ctx)
 	s.Require().NoError(err)
 
 	bucket, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{Bucket: aws.String(s.s3Cfg.NFTBucketName)})
@@ -75,7 +76,10 @@ func (s *Suite) SetupSuite() {
 }
 
 func (s *Suite) TearDownSuite() {
-	s3Client, err := s.container.S3Client()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	_ = cancel
+
+	s3Client, err := s.container.S3Client(ctx)
 	s.Require().NoError(err)
 
 	objects, err := s3Client.ListObjectsV2(s.ctx, &s3.ListObjectsV2Input{Bucket: aws.String(s.s3Cfg.NFTBucketName)})

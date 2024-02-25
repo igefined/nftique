@@ -13,7 +13,6 @@ import (
 )
 
 var envs = []*EnvVar{
-	DefaultServiceName,
 	DefaultNamespace,
 	DefaultEnvironment,
 
@@ -46,7 +45,7 @@ var envs = []*EnvVar{
 	DefaultOperatorAddr,
 	DefaultOperatorPrivateKey,
 
-	DefaultAWSAccessKey,
+	DefaultAWSAccessKeyID,
 	DefaultAWSSecretKey,
 	DefaultAWSRegion,
 
@@ -60,7 +59,6 @@ type (
 	}
 
 	MainCfg struct {
-		ServiceName string `mapstructure:"service_name"`
 		Namespace   string `mapstructure:"namespace"`
 		Environment string `mapstructure:"environment"`
 
@@ -108,9 +106,9 @@ type (
 	}
 
 	AWSCfg struct {
-		AWSAccessKey string `mapstructure:"aws_access_key"`
-		AWSSecretKey string `mapstructure:"aws_secret_key"`
-		AWSRegion    string `mapstructure:"aws_region"`
+		AWSAccessKeyID string `mapstructure:"aws_access_key_id"`
+		AWSSecretKey   string `mapstructure:"aws_secret_key"`
+		AWSRegion      string `mapstructure:"aws_region"`
 	}
 
 	S3 struct {

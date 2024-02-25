@@ -7,11 +7,13 @@ import (
 	cfg "github.com/igefined/nftique/pkg/config"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
+	"github.com/testcontainers/testcontainers-go/network"
 )
 
 type S3Container struct {
@@ -22,8 +24,20 @@ type S3Container struct {
 	*localstack.LocalStackContainer
 }
 
-func NewS3Container(ctx context.Context, cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *Opt) (*S3Container, error) {
-	localstackContainer, err := localstack.RunContainer(ctx, testcontainers.WithImage(opt.Image))
+func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *Opt) (*S3Container, error) {
+	nw, err := network.New(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	provider, err := testcontainers.NewDockerProvider()
+	if err != nil {
+		return nil, err
+	}
+	defer provider.Close()
+
+	localstackContainer, err := localstack.RunContainer(
+		ctx, network.WithNetwork([]string{"localstack"}, nw), testcontainers.WithImage(opt.Image))
 	if err != nil {
 		return nil, err
 	}
@@ -33,29 +47,38 @@ func NewS3Container(ctx context.Context, cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *O
 		return nil, err
 	}
 
-	host, err := localstackContainer.Host(ctx)
+	host, err := provider.DaemonHost(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	return &S3Container{
-		s3Cfg:               cfg,
+		s3Cfg:               s3Cfg,
 		awsCfg:              awsCfg,
 		LocalStackContainer: localstackContainer,
 		endpoint:            fmt.Sprintf("http://%s:%d", host, port.Int()),
 	}, nil
 }
 
-func (c *S3Container) S3Client() (*s3.Client, error) {
-	options := s3.Options{
-		// Region:       c.awsCfg.AWSRegion,
-		BaseEndpoint: aws.String(c.endpoint),
-		UsePathStyle: true,
-		Credentials: aws.NewCredentialsCache(
-			credentials.NewStaticCredentialsProvider(c.awsCfg.AWSAccessKey, c.awsCfg.AWSSecretKey, "")),
+func (c *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
+	customResolver := aws.EndpointResolverWithOptionsFunc(
+		func(service, region string, opts ...interface{}) (aws.Endpoint, error) {
+			return aws.Endpoint{
+				URL: c.endpoint,
+				//SigningRegion: region,
+			}, nil
+		})
+
+	options, err := config.LoadDefaultConfig(ctx,
+		config.WithEndpointResolverWithOptions(customResolver),
+		config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(c.awsCfg.AWSAccessKeyID, c.awsCfg.AWSSecretKey, "")),
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	s3Client := s3.New(options)
+	s3Client := s3.NewFromConfig(options)
 
 	return s3Client, nil
 }

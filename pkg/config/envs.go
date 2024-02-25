@@ -5,7 +5,6 @@ import "time"
 const (
 	localhost = "127.0.0.1"
 
-	defaultServiceName = "nftique"
 	defaultNamespace   = "nftique_namespace"
 	defaultHost        = "127.0.0.1"
 	defaultPort        = "8080"
@@ -25,13 +24,6 @@ const (
 )
 
 var (
-	DefaultServiceName = NewEnvVar(
-		"service_name",
-		"SERVICE_NAME",
-		defaultServiceName,
-		"Service name",
-	)
-
 	DefaultNamespace = NewEnvVar(
 		"namespace",
 		"NAMESPACE",
@@ -207,10 +199,10 @@ var (
 		"Blockchain operator private key",
 	)
 
-	DefaultAWSAccessKey = NewEnvVar(
-		"aws_access_key",
-		"AWS_ACCESS_KEY",
-		"aws_access_key",
+	DefaultAWSAccessKeyID = NewEnvVar(
+		"aws_access_key_id",
+		"AWS_ACCESS_KEY_ID",
+		"aws_access_key_id",
 		"AWS Access Key",
 	)
 
