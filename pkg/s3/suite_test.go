@@ -39,7 +39,7 @@ func (s *Suite) SetupSuite() {
 	logger, err := log.NewLogger(zap.DebugLevel)
 	s.Require().NoError(err)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	_ = cancel
 
 	type testConfig struct {

@@ -18,11 +18,11 @@ jobs:
       - name: Update
         run: make update
 
-      - name: Test
-        run: make test
-
       - name: Lint
         run: make lint
+
+      - name: Test
+        run: make test
 
       - name: Build
         run: make build

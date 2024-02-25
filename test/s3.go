@@ -13,7 +13,6 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
-	"github.com/testcontainers/testcontainers-go/network"
 )
 
 type S3Container struct {
@@ -25,11 +24,6 @@ type S3Container struct {
 }
 
 func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *Opt) (*S3Container, error) {
-	nw, err := network.New(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	provider, err := testcontainers.NewDockerProvider()
 	if err != nil {
 		return nil, err
@@ -37,7 +31,7 @@ func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt 
 	defer provider.Close()
 
 	localstackContainer, err := localstack.RunContainer(
-		ctx, network.WithNetwork([]string{"localstack"}, nw), testcontainers.WithImage(opt.Image))
+		ctx, testcontainers.WithImage(opt.Image))
 	if err != nil {
 		return nil, err
 	}
@@ -64,13 +58,14 @@ func (c *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
 	customResolver := aws.EndpointResolverWithOptionsFunc(
 		func(service, region string, opts ...interface{}) (aws.Endpoint, error) {
 			return aws.Endpoint{
-				URL: c.endpoint,
-				//SigningRegion: region,
+				URL:           c.endpoint,
+				SigningRegion: region,
 			}, nil
 		})
 
 	options, err := config.LoadDefaultConfig(ctx,
 		config.WithEndpointResolverWithOptions(customResolver),
+		config.WithRegion(c.awsCfg.AWSRegion),
 		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(c.awsCfg.AWSAccessKeyID, c.awsCfg.AWSSecretKey, "")),
 	)
