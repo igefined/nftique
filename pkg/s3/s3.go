@@ -54,7 +54,6 @@ func (c *Client) Store(ctx context.Context, filename string, contentBytes []byte
 		Bucket: aws.String(c.bucketName),
 		Key:    aws.String(filename),
 		Body:   bytes.NewReader(contentBytes),
-		ACL:    "public-read",
 	})
 	if err != nil {
 		return err

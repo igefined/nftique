@@ -24,14 +24,7 @@ type S3Container struct {
 }
 
 func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt *Opt) (*S3Container, error) {
-	provider, err := testcontainers.NewDockerProvider()
-	if err != nil {
-		return nil, err
-	}
-	defer provider.Close()
-
-	localstackContainer, err := localstack.RunContainer(
-		ctx, testcontainers.WithImage(opt.Image))
+	localstackContainer, err := localstack.RunContainer(ctx, testcontainers.WithImage(opt.Image))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +34,7 @@ func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt 
 		return nil, err
 	}
 
-	host, err := provider.DaemonHost(ctx)
+	host, err := localstackContainer.Container.Host(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -54,26 +47,31 @@ func NewS3Container(ctx context.Context, s3Cfg *cfg.S3, awsCfg *cfg.AWSCfg, opt 
 	}, nil
 }
 
-func (c *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
+func (s *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
 	customResolver := aws.EndpointResolverWithOptionsFunc(
 		func(service, region string, opts ...interface{}) (aws.Endpoint, error) {
 			return aws.Endpoint{
-				URL:           c.endpoint,
-				SigningRegion: region,
+				URL: s.endpoint,
 			}, nil
 		})
 
 	options, err := config.LoadDefaultConfig(ctx,
 		config.WithEndpointResolverWithOptions(customResolver),
-		config.WithRegion(c.awsCfg.AWSRegion),
+		config.WithRegion(s.awsCfg.AWSRegion),
 		config.WithCredentialsProvider(
-			credentials.NewStaticCredentialsProvider(c.awsCfg.AWSAccessKeyID, c.awsCfg.AWSSecretKey, "")),
+			credentials.NewStaticCredentialsProvider(s.awsCfg.AWSAccessKeyID, s.awsCfg.AWSSecretKey, "")),
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	s3Client := s3.NewFromConfig(options)
+	s3Client := s3.NewFromConfig(options, func(o *s3.Options) {
+		o.UsePathStyle = true
+	})
 
 	return s3Client, nil
+}
+
+func (s *S3Container) Endpoint() string {
+	return s.endpoint
 }

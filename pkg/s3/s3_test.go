@@ -8,7 +8,7 @@ const testFilename = "test_filename"
 
 func (s *Suite) TestStore() {
 	s.Run("success", func() {
-		bytes := make([]byte, 128)
+		bytes := make([]byte, 4)
 		_, err := rand.Read(bytes)
 		s.Require().NoError(err)
 

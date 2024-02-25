@@ -216,8 +216,15 @@ var (
 	DefaultAWSRegion = NewEnvVar(
 		"aws_region",
 		"AWS_REGION",
-		"eu-north-1",
+		"us-east-1",
 		"AWS Region",
+	)
+
+	DefaultAWSEndpoint = NewEnvVar(
+		"aws_endpoint",
+		"AWS_ENDPOINT",
+		"",
+		"AWS Endpoint",
 	)
 
 	DefaultS3NFTBucketName = NewEnvVar(

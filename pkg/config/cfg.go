@@ -48,6 +48,7 @@ var envs = []*EnvVar{
 	DefaultAWSAccessKeyID,
 	DefaultAWSSecretKey,
 	DefaultAWSRegion,
+	DefaultAWSEndpoint,
 
 	DefaultS3NFTBucketName,
 }
@@ -109,6 +110,7 @@ type (
 		AWSAccessKeyID string `mapstructure:"aws_access_key_id"`
 		AWSSecretKey   string `mapstructure:"aws_secret_key"`
 		AWSRegion      string `mapstructure:"aws_region"`
+		AWSEndpoint    string `mapstructure:"aws_endpoint"`
 	}
 
 	S3 struct {

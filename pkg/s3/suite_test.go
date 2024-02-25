@@ -60,6 +60,7 @@ func (s *Suite) SetupSuite() {
 	s3Container, err := test.NewS3Container(ctx, s.s3Cfg, s.awsCfg, &test.Opt{Enabled: true, Image: defaultImage})
 	s.Require().NoError(err)
 	s.Require().True(s3Container.IsRunning())
+	s.awsCfg.AWSEndpoint = s3Container.Endpoint()
 
 	s3Client, err := s3Container.S3Client(ctx)
 	s.Require().NoError(err)

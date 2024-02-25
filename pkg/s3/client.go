@@ -6,6 +6,7 @@ import (
 	cfg "github.com/igefined/nftique/pkg/config"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -28,13 +29,20 @@ type Client struct {
 
 //nolint:ireturn
 func New(awsCfg *cfg.AWSCfg, opts ...Opt) (*Client, error) {
-	options := s3.Options{
-		Region: awsCfg.AWSRegion,
-		Credentials: aws.NewCredentialsCache(
+	options, err := config.LoadDefaultConfig(context.Background(),
+		config.WithRegion(awsCfg.AWSRegion),
+		config.WithCredentialsProvider(
 			credentials.NewStaticCredentialsProvider(awsCfg.AWSAccessKeyID, awsCfg.AWSSecretKey, "")),
+	)
+	if err != nil {
+		return nil, err
 	}
 
-	s3Client := s3.New(options)
+	if awsCfg.AWSEndpoint != "" {
+		options.BaseEndpoint = aws.String(awsCfg.AWSEndpoint)
+	}
+
+	s3Client := s3.NewFromConfig(options)
 
 	instance := &Client{
 		awsCfg:   awsCfg,
