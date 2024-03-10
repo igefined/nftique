@@ -9,15 +9,14 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"go.uber.org/zap"
 )
 
 const urlMedia = "https://%s.s3.amazonaws.com/%s"
 
-func (c *Client) List(ctx context.Context, filename string) ([]*Media, error) {
-	objects, err := c.client.ListObjects(ctx, &s3.ListObjectsInput{
-		Bucket: aws.String(c.bucketName),
-		Prefix: aws.String(filename),
-	})
+func (c *Client) List(ctx context.Context) ([]*Media, error) {
+	objects, err := c.client.ListObjects(ctx, &s3.ListObjectsInput{Bucket: aws.String(c.bucketName)})
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +60,37 @@ func (c *Client) Store(ctx context.Context, filename string, contentBytes []byte
 
 	if result.Location == "" {
 		return errors.New("error store file")
+	}
+
+	return nil
+}
+
+func (c *Client) Delete(ctx context.Context, filenames []string) error {
+	toDelete := make([]types.ObjectIdentifier, len(filenames))
+	for i := range filenames {
+		toDelete[i] = types.ObjectIdentifier{
+			Key: aws.String(filenames[i]),
+		}
+	}
+
+	objects, err := c.client.DeleteObjects(ctx,
+		&s3.DeleteObjectsInput{Bucket: aws.String(c.bucketName), Delete: &types.Delete{Objects: toDelete}})
+	if err != nil {
+		return err
+	}
+
+	if len(objects.Deleted) != len(filenames) {
+		deleted := make([]string, len(objects.Deleted))
+		for i := range objects.Deleted {
+			if objects.Deleted[i].Key != nil {
+				deleted[i] = *objects.Deleted[i].Key
+			}
+		}
+
+		c.logger.Error("s3 deleted objects are not equal as expected",
+			zap.Strings("deleted", deleted),
+			zap.Strings("expected", filenames),
+		)
 	}
 
 	return nil

@@ -6,7 +6,7 @@ COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_DATE = $(shell date -u +"%Y-%m-%dT%H:%M:%S")
 LDFLAGS = -ldflags "-w -X ${PACKAGE}/internal/app.Version=${VERSION} -X ${PACKAGE}/internal/app.BuildDate=${BUILD_DATE} -X ${PACKAGE}/internal/app.Commit=${COMMIT}"
 # golang-ci tag
-GOLANGCI_TAG:=1.55.2
+GOLANGCI_TAG:=1.56.0
 # Path to the binary
 LOCAL_BIN:=$(CURDIR)/bin
 # Path to the binary golang-ci
@@ -83,7 +83,6 @@ install-config:
 .PHONY: test
 test:
 	@go test ./... -v -count=1 -coverprofile .cover
-	@./scripts/coverignore.sh
 	@go tool cover -html=.cover -o coverage.html
 	@go tool cover -func .cover | grep "total:"
 

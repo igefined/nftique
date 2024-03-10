@@ -51,7 +51,9 @@ func (s *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
 	customResolver := aws.EndpointResolverWithOptionsFunc(
 		func(service, region string, opts ...interface{}) (aws.Endpoint, error) {
 			return aws.Endpoint{
-				URL: s.endpoint,
+				PartitionID:   "aws",
+				URL:           s.endpoint,
+				SigningRegion: region,
 			}, nil
 		})
 
@@ -66,6 +68,7 @@ func (s *S3Container) S3Client(ctx context.Context) (*s3.Client, error) {
 	}
 
 	s3Client := s3.NewFromConfig(options, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(s.endpoint)
 		o.UsePathStyle = true
 	})
 

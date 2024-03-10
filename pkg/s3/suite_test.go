@@ -65,13 +65,18 @@ func (s *Suite) SetupSuite() {
 	s3Client, err := s3Container.S3Client(ctx)
 	s.Require().NoError(err)
 
-	bucket, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{Bucket: aws.String(s.s3Cfg.NFTBucketName)})
+	bucket, err := s3Client.CreateBucket(ctx, &s3.CreateBucketInput{
+		Bucket: aws.String(s.s3Cfg.NFTBucketName),
+		CreateBucketConfiguration: &types.CreateBucketConfiguration{
+			LocationConstraint: types.BucketLocationConstraint(cfg.AWSRegion),
+		},
+	})
 	s.Require().NoError(err)
 	s.Require().NotNil(bucket)
 
 	s.container = s3Container
 
-	client, err := New(s.awsCfg, WithBucketName(s.s3Cfg.NFTBucketName))
+	client, err := New(logger, s.awsCfg, WithBucketName(s.s3Cfg.NFTBucketName))
 	s.Require().NoError(err)
 	s.client = client
 }
@@ -87,24 +92,26 @@ func (s *Suite) TearDownSuite() {
 	s.Require().NoError(err)
 	s.Require().NotNil(objects)
 
-	toDel := make([]types.ObjectIdentifier, 0, len(objects.Contents))
-	for _, obj := range objects.Contents {
-		if obj.Key != nil {
-			toDel = append(toDel, types.ObjectIdentifier{
-				Key: aws.String(*obj.Key),
-			})
+	if len(objects.Contents) > 0 {
+		toDel := make([]types.ObjectIdentifier, 0, len(objects.Contents))
+		for _, obj := range objects.Contents {
+			if obj.Key != nil {
+				toDel = append(toDel, types.ObjectIdentifier{
+					Key: aws.String(*obj.Key),
+				})
+			}
 		}
-	}
 
-	input := &s3.DeleteObjectsInput{
-		Bucket: aws.String(s.s3Cfg.NFTBucketName),
-		Delete: &types.Delete{
-			Objects: toDel,
-		},
-	}
+		input := &s3.DeleteObjectsInput{
+			Bucket: aws.String(s.s3Cfg.NFTBucketName),
+			Delete: &types.Delete{
+				Objects: toDel,
+			},
+		}
 
-	_, err = s3Client.DeleteObjects(s.ctx, input)
-	s.Require().NoError(err)
+		_, err = s3Client.DeleteObjects(s.ctx, input)
+		s.Require().NoError(err)
+	}
 
 	_, err = s3Client.DeleteBucket(s.ctx, &s3.DeleteBucketInput{Bucket: aws.String(s.s3Cfg.NFTBucketName)})
 	s.Require().NoError(err)

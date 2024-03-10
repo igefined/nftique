@@ -216,7 +216,7 @@ var (
 	DefaultAWSRegion = NewEnvVar(
 		"aws_region",
 		"AWS_REGION",
-		"us-east-1",
+		"eu-central-1",
 		"AWS Region",
 	)
 
