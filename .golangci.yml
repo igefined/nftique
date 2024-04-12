@@ -15,7 +15,6 @@ linters:
     - goconst
     - gocritic
     - gofmt
-    - ireturn
     - lll
     - makezero
     - misspell

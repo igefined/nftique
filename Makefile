@@ -1,7 +1,7 @@
 PACKAGE = $(shell go list -m)
 BINARY_NAME = nftique
 BUILD_DIR = build
-VERSION ?= $(shell git describe --exact-match --tags 2> /dev/null || head -1 CHANGELOG.md | cut -d ' ' -f 2)
+VERSION ?= $(shell git describe --exact-match --tags 2> /dev/null)
 COMMIT ?= $(shell git rev-parse HEAD)
 BUILD_DATE = $(shell date -u +"%Y-%m-%dT%H:%M:%S")
 LDFLAGS = -ldflags "-w -X ${PACKAGE}/internal/app.Version=${VERSION} -X ${PACKAGE}/internal/app.BuildDate=${BUILD_DATE} -X ${PACKAGE}/internal/app.Commit=${COMMIT}"
@@ -62,7 +62,7 @@ endif
 # Linter will check only diffs with main branch (default)
 .PHONY: lint
 lint: install-lint
-	$(GOLANGCI_BIN) run --config=.golangci.yml ./... --new-from-rev=origin/master --timeout=$(LINTER_TIMEOUT) --build-tags=$(SERVICE_NAME)
+	$(GOLANGCI_BIN) run --config=.golangci.yml ./... --new-from-rev=origin/main --timeout=$(LINTER_TIMEOUT) --build-tags=$(SERVICE_NAME)
 
 # Run full code lint
 .PHONY: lint-full
@@ -72,7 +72,7 @@ lint-full: lint
 # Linter will check only diffs with main branch and auto fix them.
 .PHONY: lint-fix
 lint-fix: lint
-	$(GOLANGCI_BIN) run --fix --config=.golangci.yml ./... --new-from-rev=origin/master --timeout=$(LINTER_TIMEOUT) --build-tags=$(SERVICE_NAME)
+	$(GOLANGCI_BIN) run --fix --config=.golangci.yml ./... --new-from-rev=origin/main --timeout=$(LINTER_TIMEOUT) --build-tags=$(SERVICE_NAME)
 
 # Install config to your home directory.
 .PHONY: install-config

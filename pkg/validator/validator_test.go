@@ -2,9 +2,36 @@ package validator
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/igefined/nftique/pkg/utils"
 )
+
+func TestNewValidator(t *testing.T) {
+	validator, err := NewValidator()
+	assert.NoError(t, err)
+	assert.NotNil(t, validator)
+}
+
+func TestDateTimeOrNil(t *testing.T) {
+	type TestData struct {
+		Time *time.Time `validate:"omitempty,dateTimeOrNil"`
+	}
+
+	validate, err := NewValidator()
+	assert.NoError(t, err)
+
+	nilTimeData := TestData{Time: nil}
+
+	err = validate.Struct(nilTimeData)
+	assert.NoError(t, err)
+
+	futureTimeData := TestData{Time: utils.Ptr(time.Now().Add(time.Hour))}
+	err = validate.Struct(futureTimeData)
+	assert.NoError(t, err)
+}
 
 func TestXor(t *testing.T) {
 	tCases := []struct {

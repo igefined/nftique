@@ -17,12 +17,12 @@ func NewValidator() (*validator.Validate, error) {
 }
 
 func dateTimeOrNil(fl validator.FieldLevel) bool {
-	req, ok := fl.Field().Interface().(*time.Time)
+	req, ok := fl.Field().Interface().(time.Time)
 	if !ok {
 		return false
 	}
 
-	return xor(req == nil, req.After(time.Now()))
+	return xor(req == time.Time{}, req.After(time.Now()))
 }
 
 func xor(x, y bool) bool {
